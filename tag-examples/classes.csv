@@ -1,0 +1,12 @@
+classid,getcmd,setcmd
+bios.Policy,Get-IntersightBiosPolicyList,Set-IntersightBiosPolicy -BiosPolicy $new_policy -Moid $moid
+deviceconnector.Policy,Get-IntersightDeviceconnectorPolicyList,Set-IntersightDeviceconnectorPolicy -DeviceconnectorPolicy $new_policy -Moid $moid
+kvm.Policy,Get-IntersightKvmPolicyList,Set-IntersightKvmPolicy -KvmPolicy $new_policy -Moid $moid
+ntp.Policy,Get-IntersightNtpPolicyList,Set-IntersightNtpPolicy -NtpPolicy $new_policy -Moid $moid
+vnic.LanConnectivityPolicy,Get-IntersightVnicLanConnectivityPolicyList,Set-IntersightVnicLanConnectivityPolicy -VnicLanConnectivityPolicy $new_policy -Moid $moid
+vmedia.Policy,Get-IntersightVmediaPolicyList,Set-IntersightVmediaPolicy -VmediaPolicy $new_policy -Moid $moid
+hyperflex.ClusterProfile,Get-IntersightHyperflexClusterProfileList,Set-IntersightHyperflexClusterProfile -HyperflexClusterProfile $new_policy -Moid $moid
+server.Profile,Get-IntersightServerProfileList,Set-IntersightServerProfile -ServerProfile $new_policy -Moid $moid
+storage.StoragePolicy,Get-IntersightStorageStoragePolicyList,Set-IntersightStorageStoragePolicy $new_policy -Moid $moid
+kubernetes.ClusterProfile,Get-IntersightKubernetesClusterProfileList,Set-IntersightKubernetesClusterProfile $new_policy -Moid $moid
+macpool.Pool,Get-IntersightMacpoolPoolList,Set-IntersightMacpoolPool $new_policy -Moid $moid
