@@ -12,11 +12,23 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 #>
 
-foreach($csv_row in (Import-Csv servers.csv)) {
+[cmdletbinding()]
+param(
+    [parameter(Mandatory=$true)]
+    [string]$CsvFile
+)
+
+foreach($csv_row in (Import-Csv $CsvFile)) {
     # get the server Moid by searching for the server by serial number
     $myfilter = "Serial eq $($csv_row.serial)"
     $response = (Get-IntersightComputeRackUnitList -VarFilter $myfilter -Select Tags).ActualInstance.Results
     $moid = $response.moid
+
+    if($response.count -eq 0) 
+    {
+        Write-Host $csv_row.serial + " is not a rack server. Skipping..."
+        continue
+    }
 
     # remove serial number because we don't need it anymore and don't want
     # it applied as a tag
@@ -24,12 +36,13 @@ foreach($csv_row in (Import-Csv servers.csv)) {
 
     # create tags based on column headings in the CSV file
     $tags = @()
-    $csv_row.PSObject.Properties | % {
+    $csv_row.PSObject.Properties | ForEach-Object {
         $temp = New-Object PSObject -Property @{Key="$($_.Name)"; Value="$($_.Value)"}
-        $tags += $temp
+        if($_.Value -ne "") { $tags += $temp }
     }
     
-    # apply the new tags to the server, overwriting all existing tags
+    # apply the new tags to the server, overwriting all existing tags and
+    # display the serial number on the screen for feedback
     $settings = @{Tags=$tags}
-    Set-IntersightComputeRackUnit -Moid $moid -ComputeRackUnit $settings
+    (Set-IntersightComputeRackUnit -Moid $moid -ComputeRackUnit $settings).Serial
 }
