@@ -20,7 +20,13 @@ This script depends on the file `classes.csv` and will only update those object 
 
 ### `tag-servers-csv.ps1`
 
-This script **overwrites** a server's tags with the tags specified in a CSV file. **Caution**: a server's assigned license level is maintained as a tag, so be sure to include that in the CSV. The CSV should follow the format shown below. Every column (except serial number) represents the *key* for a tag that will be applied to a given server. License tier should follow the syntax shown here.
+This script **overwrites** a server's tags with the tags specified in a CSV file. 
+
+```bash
+tag-servers-csv.ps1 -CsvFile servers.csv
+```
+
+**Caution**: a server's assigned license level is maintained as a tag, so be sure to include that in the CSV. The CSV should follow the format shown below. Every column (except serial number) represents the *key* for a tag that will be applied to a given server. License tier should follow the syntax shown here.
 
 |serial|tag_key1|tag_key2|Intersight.LicenseTier|
 |----|----|----|----|
@@ -44,6 +50,6 @@ Here is an example with sample values in it. To add more tags, simply add more c
 
 This script adds the specified tag to every server in your Intersight account whose locator LED is turned on. This preserves all existing tags. The tag key and value are specified when calling the script as shown below.
 
-```powershell
+```bash
 tag-servers-locator.ps1 -Key location -Value austin
 ```
