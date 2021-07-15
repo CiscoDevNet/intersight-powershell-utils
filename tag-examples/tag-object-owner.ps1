@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -22,11 +22,12 @@ foreach($class in Import-Csv classes.csv)
 {
     # use the search API to find all objects of the given class, returning
     # only the Tags for each object to minimize payload size
-    foreach ($p in (Get-IntersightSearchSearchItemList -VarFilter "ClassId eq $($class.classid)" -Select Tags).ActualInstance.Results) 
+    $searchItems = (Get-IntersightSearchSearchItem -Filter "ClassId eq $($class.classid)" -Select Tags).Results 
+    foreach ($p in $searchItems) 
     {
         # retrieve the email address of the person who created the object
         # from the audit log
-        $email = (Get-IntersightAaaAuditRecordList -VarFilter "ObjectMoid eq '$($p.Moid)' and Event eq Created" -Select Email).ActualInstance.Results.Email
+        $email = (Get-IntersightAaaAuditRecord -Filter "ObjectMoid eq '$($p.Moid)' and Event eq Created" -Select Email).Results.Email
         $author = $email -replace '@.*', ''
 
         # create a new array of Tags and copy all of the existing tags
@@ -48,8 +49,7 @@ foreach($class in Import-Csv classes.csv)
         if($update_needed)
         {
             # add the owner to the list of tags
-            $new_tags += New-Object PSObject -Property @{Key="owner"; Value="$($author)"}
-            $new_policy = @{Tags=$new_tags}
+            $new_tags += Initialize-IntersightMoTag -Key "owner"  -Value $author
             $moid = $p.Moid
             Write-Host (Invoke-Expression -Command $class.setcmd).Name
             Write-Verbose "$($class.classid):$($moid) --> author tag set to $($author)"

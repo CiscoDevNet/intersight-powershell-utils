@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -20,27 +20,18 @@ or implied.
 
 # Get the Moid of the organization in which to place the policy
 
-$my_org = (Get-IntersightOrganizationOrganizationList `
-        -VarFilter 'Name eq default' `
-        -Select Moid).ActualInstance.Results | Select-Object -First 1
+$my_org = Get-IntersightOrganizationOrganization -Name default 
 
-# create the data structure that represents the policy 
-
-$policy = Initialize-IntersightKvmPolicy `
+# create the policy
+$result = New-IntersightKvmPolicy `
     -Description 'created by PowerShell' `
     -Name KVMpowershell `
     -EnableLocalServerVideo $true `
     -EnableVideoEncryption $true `
     -Enabled $true `
     -MaximumSessions 4 `
-    -Organization @{Moid = $my_org.Moid }
+    -Organization $my_org
 
-# this is a temporary workaround for a bug that incorrectly adds an
-# unnecessary property to this policy
-$policy.PSObject.Properties.Remove('_0_ClusterReplicationNetworkPolicy')
-
-# create the policy
-$result = New-IntersightKvmPolicy -KvmPolicy $policy
 Write-Host $result
 
 # =============================================================================
@@ -48,17 +39,13 @@ Write-Host $result
 # -----------------------------------------------------------------------------
 
 # create the data structure representing updates to the policy
-$tags = New-Object PSObject -Property @{Key = "location"; Value = "houston" }
-$policy = New-Object PSObject -Property @{
-    Tags                   = @($tags)
-    EnableLocalServerVideo = $false
-}
+$tags = Initialize-IntersightMoTag -Key "location" -Value "houston" 
 
 # update the policy by adding a tag and modifying the description
-Update-IntersightKvmPolicy -Moid $result.Moid -KvmPolicy $policy
+$result | Set-IntersightKvmPolicy -EnableLocalServerVideo $false -Tags @($tags)
 
 # =============================================================================
 # Remove policy
 # -----------------------------------------------------------------------------
 
-Remove-IntersightKvmPolicy -Moid $result.Moid
+$result | Remove-IntersightKvmPolicy

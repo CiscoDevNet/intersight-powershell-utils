@@ -29,7 +29,7 @@ $myfilter = "Parent.ObjectType eq compute.RackUnit and OperState eq on"
 # Using our filter and -Expand to return the ComputeRackUnit will give us the
 # Moid and the existing Tags for the server so we don't have to do an
 # additional get operation. 
-$results = (Get-IntersightEquipmentLocatorLedList -VarFilter $myfilter -Select ComputeRackUnit -Expand ComputeRackUnit).ActualInstance.Results
+$results = (Get-IntersightEquipmentLocatorLed -Filter $myfilter -Select ComputeRackUnit -Expand ComputeRackUnit).Results
 
 foreach ($server in $results)
 {
@@ -41,12 +41,11 @@ foreach ($server in $results)
     {
         if($t.Key -notmatch $Key) { $new_tags += $t }
     }
-    $new_tags += New-Object PSObject -Property @{Key=$Key; Value=$Value}
+    $new_tags += Initialize-IntersightMoTag -Key $Key -Value $Value
     
     # apply the new tags to the server, overwriting all existing tags
-    $settings = @{Tags=$new_tags}
     $moid = $server.ComputeRackUnit.Moid
-    (Set-IntersightComputeRackUnit -Moid $moid -ComputeRackUnit $settings).Serial
+    (Set-IntersightComputeRackUnit -Moid $moid -Tags $new_tags).Serial
     Write-Verbose "$($new_tags.Count) tags now exist for this server"
 }
 
