@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -36,9 +36,7 @@ $base_name = ("$($vDisk)_Raid$($Raid)_" + ($Disks -join ""))
 # -----------------------------------------------------------------------------
 
 # Get the Moid of the organization in which to place the policy
-$my_org = (Get-IntersightOrganizationOrganizationList `
-        -VarFilter 'Name eq default' `
-        -Select Moid).ActualInstance.Results | Select-Object -First 1
+$my_org = Get-IntersightOrganizationOrganization -Name default
 
 # Ensure the right number of disks is specified. They must be able to split
 # evenly into the number of specified span groups. For example, if the user
@@ -64,19 +62,14 @@ for($g=1; $g -le $SpanGroups; $g++)
     $groups += Initialize-IntersightStorageSpanGroup -Disks $local_disks
 }
 
-$policy = Initialize-IntersightStorageDiskGroupPolicy `
+# create the StorageDiskGroup policy
+$dg_policy = New-IntersightStorageDiskGroupPolicy `
     -Description 'created by PowerShell' `
     -Name "$($base_name)_group" `
     -RaidLevel "Raid$($Raid)" `
     -SpanGroups $groups `
-    -Organization @{Moid = $my_org.Moid }
+    -Organization $my_org
 
-# this is a temporary workaround for a bug that incorrectly adds an
-# unnecessary property to this policy
-$policy.PSObject.Properties.Remove('_0_ClusterReplicationNetworkPolicy')
-
-# create the policy
-$dg_policy = New-IntersightStorageDiskGroupPolicy -StorageDiskGroupPolicy $policy
 Write-Host "Created Disk Group policy '$($dg_policy.Name)' with Moid $($dg_policy.Moid)"
 
 # =============================================================================
@@ -94,15 +87,11 @@ $virtual_drives = @(
         -Size 0
 )
 
-$policy = Initialize-IntersightStorageStoragePolicy `
+# create storage policy
+$storagepolicy = New-IntersightStorageStoragePolicy `
     -Description 'created by PowerShell' `
     -Name "$($base_name)_storage" `
     -VirtualDrives $virtual_drives `
-    -Organization @{Moid = $my_org.Moid }
+    -Organization $my_org
 
-# this is a temporary workaround for a bug that incorrectly adds an
-# unnecessary property to this policy
-$policy.PSObject.Properties.Remove('_0_ClusterReplicationNetworkPolicy')
-
-$storagepolicy = New-IntersightStorageStoragePolicy -StorageStoragePolicy $policy
 Write-Host "Created Disk Group policy '$($storagepolicy.Name)' with Moid $($storagepolicy.Moid)"

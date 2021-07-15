@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -20,8 +20,8 @@ param(
 )
 
 # get and display the most recent audit log for a given user
-(Get-IntersightAaaAuditRecordList `
-    -VarFilter "contains(Email, '$($Email)')" `
+(Get-IntersightAaaAuditRecord `
+    -Filter "contains(Email, '$($Email)')" `
     -Apply 'groupby((MoType), aggregate(CreateTime with max as Latest))' `
     -Orderby Latest `
-).ActualInstance.Results
+).Results

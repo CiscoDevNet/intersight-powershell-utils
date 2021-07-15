@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -15,7 +15,7 @@ or implied.
 # This script captures the entire audit history of a managed object specified
 # by its Moid (managed object ID).
 
-# the only required parameter is $Moid
+# the only required parameter is days
 [cmdletbinding()]
 param(
     [parameter(Mandatory=$true)]
@@ -25,11 +25,11 @@ param(
 # retrieve the audit log for all delete entries for the last X days
 $mydate = (Get-Date).AddDays(-$Days).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 $myfilter = "Event eq Deleted and CreateTime gt $mydate"
-$data = (Get-IntersightAaaAuditRecordList `
-        -VarFilter $myfilter `
+$data = (Get-IntersightAaaAuditRecord `
+        -Filter $myfilter `
         -Orderby CreateTime `
         -Select 'CreateTime,Email,MoDisplayNames'
-    ).ActualInstance.Results
+    ).Results
 
 # add the name of the deleted object to each "row" of results from the API
 foreach($obj in $data) 
