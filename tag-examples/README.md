@@ -2,7 +2,7 @@
 
 ## Authorization
 
-Authorization is performed by every Intersight cmdlet. You must properly configure the Intersight PowerShell module parameters using the `Set-IntersightConfigurationHttpSigning` cmdlet as described in the [Getting Started](https://github.com/CiscoDevNet/intersight-powershell/blob/master/GettingStarted.md) page of the Intersight module code.
+Authorization is performed by every Intersight cmdlet. You must properly configure the Intersight PowerShell module parameters using the `Set-IntersightConfiguration` cmdlet as described in the [Getting Started](https://github.com/CiscoDevNet/intersight-powershell/blob/master/GettingStarted.md) page of the Intersight module code.
 
 ## Examples
 
@@ -22,7 +22,7 @@ This script depends on the file `classes.csv` and will only update those object 
 
 This script **overwrites** a server's tags with the tags specified in a CSV file. 
 
-```bash
+```powershell
 tag-servers-csv.ps1 -CsvFile servers.csv
 ```
 
@@ -50,6 +50,6 @@ Here is an example with sample values in it. To add more tags, simply add more c
 
 This script adds the specified tag to every server in your Intersight account whose locator LED is turned on. This preserves all existing tags. The tag key and value are specified when calling the script as shown below.
 
-```bash
+```powershell
 tag-servers-locator.ps1 -Key location -Value austin
 ```

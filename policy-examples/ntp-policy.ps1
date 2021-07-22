@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -20,44 +20,31 @@ or implied.
 
 # Get the Moid of the organization in which to place the policy
 
-$my_org = (Get-IntersightOrganizationOrganizationList `
-        -VarFilter 'Name eq default' `
-        -Select Moid).ActualInstance.Results | Select-Object -First 1
+$my_org = Get-IntersightOrganizationOrganization -Name default
 
-# create the data structure that represents the policy 
-
-$policy = Initialize-IntersightNtpPolicy `
+# create the policy
+$result = New-IntersightNtpPolicy `
     -Description 'created by PowerShell' `
     -Enabled $true `
     -Name NTPpowershell `
     -NtpServers @('172.16.1.90', '172.16.1.91') `
-    -Organization @{Moid = $my_org.Moid } `
-    -Timezone 'America/Chicago'
+    -Organization $my_org `
+    -Timezone AmericaChicago
 
-# this is a temporary workaround for a bug that incorrectly adds an
-# unnecessary property to this policy
-$policy.PSObject.Properties.Remove('_0_ClusterReplicationNetworkPolicy')
-
-# create the policy
-$result = New-IntersightNtpPolicy -NtpPolicy $policy
 Write-Host $result
 
 # =============================================================================
 # Update policy
 # -----------------------------------------------------------------------------
 
-# create the data structure representing updates to the policy
-$tags = New-Object PSObject -Property @{Key = "location"; Value = "houston" }
-$policy = New-Object PSObject -Property @{
-    Tags        = @($tags)
-    Description = 'modified description'
-}
+# create the tag object which can be used with Set cmdlet 
+$tags =  Initialize-IntersightMoTag -Key "location" -Value  "houston"
 
 # update the policy by adding a tag and modifying the description
-Update-IntersightNtpPolicy -Moid $result.Moid -NtpPolicy $policy
+$result | Set-IntersightNtpPolicy -Description 'modified description' -Tags @($tags)
 
 # =============================================================================
 # Remove policy
 # -----------------------------------------------------------------------------
 
-Remove-IntersightNtpPolicy -Moid $result.Moid
+$result | Remove-IntersightNtpPolicy 

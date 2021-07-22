@@ -1,5 +1,5 @@
 <#
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.0 (the "License"). You may obtain a copy of the
 License at
@@ -21,7 +21,7 @@ param(
 foreach($csv_row in (Import-Csv $CsvFile)) {
     # get the server Moid by searching for the server by serial number
     $myfilter = "Serial eq $($csv_row.serial)"
-    $response = (Get-IntersightComputeRackUnitList -VarFilter $myfilter -Select Tags).ActualInstance.Results
+    $response = (Get-IntersightComputeRackUnit -Filter $myfilter -Select Tags).Results
     $moid = $response.moid
 
     if($response.count -eq 0) 
@@ -37,12 +37,13 @@ foreach($csv_row in (Import-Csv $CsvFile)) {
     # create tags based on column headings in the CSV file
     $tags = @()
     $csv_row.PSObject.Properties | ForEach-Object {
-        $temp = New-Object PSObject -Property @{Key="$($_.Name)"; Value="$($_.Value)"}
-        if($_.Value -ne "") { $tags += $temp }
+        if([string]::IsNullOrEmpty($_.Value)) { 
+            continue 
+        }
+        $tags += Initialize-IntersightMoTag -Key $_.Name -Value $_.Value
     }
     
     # apply the new tags to the server, overwriting all existing tags and
     # display the serial number on the screen for feedback
-    $settings = @{Tags=$tags}
-    (Set-IntersightComputeRackUnit -Moid $moid -ComputeRackUnit $settings).Serial
+    (Set-IntersightComputeRackUnit -Moid $moid -Tags $tags).Serial
 }
