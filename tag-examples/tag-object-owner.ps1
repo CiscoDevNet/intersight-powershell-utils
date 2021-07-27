@@ -16,15 +16,16 @@ or implied.
 [cmdletbinding()]
 param()
 
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
 # each line in the CSV file enumerates a different class and the cmdlet
 # required to update the tags for objects of that class
-foreach($class in Import-Csv classes.csv)
-{
+foreach ($class in Import-Csv classes.csv) {
     # use the search API to find all objects of the given class, returning
     # only the Tags for each object to minimize payload size
     $searchItems = (Get-IntersightSearchSearchItem -Filter "ClassId eq $($class.classid)" -Select Tags).Results 
-    foreach ($p in $searchItems) 
-    {
+    foreach ($p in $searchItems) {
         # retrieve the email address of the person who created the object
         # from the audit log
         $email = (Get-IntersightAaaAuditRecord -Filter "ObjectMoid eq '$($p.Moid)' and Event eq Created" -Select Email).Results.Email
@@ -33,12 +34,10 @@ foreach($class in Import-Csv classes.csv)
         # create a new array of Tags and copy all of the existing tags
         $update_needed = $true
         $new_tags = @()
-        foreach($t in $p.Tags)
-        {
+        foreach ($t in $p.Tags) {
             # add the existing tag
             $new_tags += $t
-            if($t.Key -like 'owner')
-            {
+            if ($t.Key -like 'owner') {
                 # owner tag is already set, so there is no need to push
                 # an update to the existing managed object
                 $update_needed = $false
@@ -46,8 +45,7 @@ foreach($class in Import-Csv classes.csv)
         }
         
         # write the tags to the managed object in Intersight if needed
-        if($update_needed)
-        {
+        if ($update_needed) {
             # add the owner to the list of tags
             $new_tags += Initialize-IntersightMoTag -Key "owner"  -Value $author
             $moid = $p.Moid

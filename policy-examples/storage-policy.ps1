@@ -28,6 +28,9 @@ param(
     [string]$vDisk
 )
 
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
 # create a prefix for the name for both policies that will be created
 $base_name = ("$($vDisk)_Raid$($Raid)_" + ($Disks -join ""))
 
@@ -41,7 +44,7 @@ $my_org = Get-IntersightOrganizationOrganization -Name default
 # Ensure the right number of disks is specified. They must be able to split
 # evenly into the number of specified span groups. For example, if the user
 # requests 3 span groups, there must be 3, 6, 9, etc. drives declared.
-if($Disks.Count % $SpanGroups) {
+if ($Disks.Count % $SpanGroups) {
     throw "Number of disks $($Disks.Count) cannot be split evenly between $($SpanGroups) groups."
 }
 
@@ -49,11 +52,9 @@ if($Disks.Count % $SpanGroups) {
 $groups = @()
 $disks_per_group = $Disks.Count / $SpanGroups
 $disk_index = 0
-for($g=1; $g -le $SpanGroups; $g++)
-{
+for ($g = 1; $g -le $SpanGroups; $g++) {
     $local_disks = @()
-    for($i=0; $i -lt $disks_per_group; $i++)
-    {
+    for ($i = 0; $i -lt $disks_per_group; $i++) {
         # create each disk and put it in an array
         $local_disks += Initialize-IntersightStorageLocalDisk -SlotNumber $Disks[$disk_index]
         $disk_index++

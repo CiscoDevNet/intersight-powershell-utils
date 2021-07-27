@@ -15,12 +15,15 @@ or implied.
 # these lines required to enable Verbose output
 [cmdletbinding()]
 param(
-    [parameter(Mandatory=$true)]
+    [parameter(Mandatory = $true)]
     [string]$Key,
 
-    [parameter(Mandatory=$true)]
+    [parameter(Mandatory = $true)]
     [string]$Value
 )
+
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
 
 # This filter will find locator LEDs that are on and belong to servers (there
 # are locator LEDs on disks, too, and we don't the API to return those).
@@ -31,15 +34,13 @@ $myfilter = "Parent.ObjectType eq compute.RackUnit and OperState eq on"
 # additional get operation. 
 $results = (Get-IntersightEquipmentLocatorLed -Filter $myfilter -Select ComputeRackUnit -Expand ComputeRackUnit).Results
 
-foreach ($server in $results)
-{
+foreach ($server in $results) {
     # Create a new list of tags containing all of the existing tags. If the tag
     # key requested by the user already exists, leave it out of the list so we
     # can add the value specified by the user.
     $new_tags = @()
-    foreach($t in $server.ComputeRackUnit.Tags)
-    {
-        if($t.Key -notmatch $Key) { $new_tags += $t }
+    foreach ($t in $server.ComputeRackUnit.Tags) {
+        if ($t.Key -notmatch $Key) { $new_tags += $t }
     }
     $new_tags += Initialize-IntersightMoTag -Key $Key -Value $Value
     
