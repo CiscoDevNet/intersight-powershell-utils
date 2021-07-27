@@ -15,13 +15,16 @@ or implied.
 # the only required parameter is $Moid
 [cmdletbinding()]
 param(
-    [parameter(Mandatory=$true)]
+    [parameter(Mandatory = $true)]
     [string]$Email
 )
 
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
 # get and display the most recent audit log for a given user
 (Get-IntersightAaaAuditRecord `
-    -Filter "contains(Email, '$($Email)')" `
-    -Apply 'groupby((MoType), aggregate(CreateTime with max as Latest))' `
-    -Orderby Latest `
+        -Filter "contains(Email, '$($Email)')" `
+        -Apply 'groupby((MoType), aggregate(CreateTime with max as Latest))' `
+        -Orderby Latest `
 ).Results

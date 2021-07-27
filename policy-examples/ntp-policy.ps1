@@ -14,6 +14,9 @@ or implied.
 
 # This script creates a new policy, updates it, and destroys it.
 
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
 # =============================================================================
 # Create policy
 # -----------------------------------------------------------------------------
@@ -38,7 +41,7 @@ Write-Host $result
 # -----------------------------------------------------------------------------
 
 # create the tag object which can be used with Set cmdlet 
-$tags =  Initialize-IntersightMoTag -Key "location" -Value  "houston"
+$tags = Initialize-IntersightMoTag -Key "location" -Value  "houston"
 
 # update the policy by adding a tag and modifying the description
 $result | Set-IntersightNtpPolicy -Description 'modified description' -Tags @($tags)

@@ -14,18 +14,20 @@ or implied.
 
 [cmdletbinding()]
 param(
-    [parameter(Mandatory=$true)]
+    [parameter(Mandatory = $true)]
     [string]$CsvFile
 )
 
-foreach($csv_row in (Import-Csv $CsvFile)) {
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
+foreach ($csv_row in (Import-Csv $CsvFile)) {
     # get the server Moid by searching for the server by serial number
     $myfilter = "Serial eq $($csv_row.serial)"
     $response = (Get-IntersightComputeRackUnit -Filter $myfilter -Select Tags).Results
     $moid = $response.moid
 
-    if($response.count -eq 0) 
-    {
+    if ($response.count -eq 0) {
         Write-Host $csv_row.serial + " is not a rack server. Skipping..."
         continue
     }
@@ -37,7 +39,7 @@ foreach($csv_row in (Import-Csv $CsvFile)) {
     # create tags based on column headings in the CSV file
     $tags = @()
     $csv_row.PSObject.Properties | ForEach-Object {
-        if([string]::IsNullOrEmpty($_.Value)) { 
+        if ([string]::IsNullOrEmpty($_.Value)) { 
             continue 
         }
         $tags += Initialize-IntersightMoTag -Key $_.Name -Value $_.Value

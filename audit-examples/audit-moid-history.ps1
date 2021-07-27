@@ -18,27 +18,30 @@ or implied.
 # the only required parameter is $Moid
 [cmdletbinding()]
 param(
-    [parameter(Mandatory=$true)]
+    [parameter(Mandatory = $true)]
     [string]$Moid
 )
+
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
 
 # retrieve all entries from the Intersight audit log where the object
 # matches the specified Moid
 $moid_filter = "ObjectMoid eq '$($Moid)'"
 
 $data = (Get-IntersightAaaAuditRecord `
-    -Filter $moid_filter `
-    -Select 'Email,CreateTime,Event,Request' `
-    -Orderby CreateTime `
-    ).Results
+        -Filter $moid_filter `
+        -Select 'Email,CreateTime,Event,Request' `
+        -Orderby CreateTime `
+).Results
 
 # Write each audit log entry to its own file in JSON format with the date of
 # the event as the filename.
 foreach ($item in $data) {
     $datestring = $item.CreateTime.ToString("yyyy-MM-dd:hhmmss.fff")
-    $path =  '.\' + $datestring + '.json'
+    $path = '.\' + $datestring + '.json'
     $item | Select-Object -ExcludeProperty ClassId, Moid, ObjectType `
-          | ConvertTo-Json -Depth 5 | Set-Content -Path $path
+    | ConvertTo-Json -Depth 5 | Set-Content -Path $path
 }
 
 # display a summary of the audit history to the screen

@@ -14,6 +14,9 @@ or implied.
 
 # This script creates a new policy, updates it, and destroys it.
 
+# configure api signing params
+. "$PSScriptRoot\..\api-config.ps1"
+
 # =============================================================================
 # Create policy
 # -----------------------------------------------------------------------------
