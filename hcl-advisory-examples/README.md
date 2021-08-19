@@ -1,4 +1,4 @@
-# Intersight HCL (Hardware Compatibility List) examples
+# Intersight HCL (Hardware Compatibility List) and Advisories Examples
 
 ## Authorization
 
@@ -14,3 +14,8 @@ This script uses the HclStatus resource in Intersight's API to collect informati
 Details are exported to a .csv file specified by the -CsvFile command line argument (default is hcl_summary.csv).
 
 ---
+
+### `advisory-export.ps1`
+
+This script uses the AdvisoryInstance resource in Intersight's API to collect advisory (Security Advisory and Field Notice) information and affected devices.
+Details are exported to a .csv file specified by the -CsvFile command line argument (default is advisory_export.csv).
