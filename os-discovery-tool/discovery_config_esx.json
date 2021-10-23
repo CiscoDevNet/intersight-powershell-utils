@@ -1,0 +1,11 @@
+{
+	"config": {
+		"vCenter": "",
+		"vCenter_creds_file": "",
+		"location_filter": "",
+		"intersight_url": "",
+		"intersight_api_key": "",
+		"intersight_secret_file": "",
+		"logfile_path": ""
+	}
+}
