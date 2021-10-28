@@ -448,7 +448,7 @@ Function IntersightConnectionSettings {
         BasePath = $env.config.intersight_url
         ApiKeyId = $env.config.intersight_api_key
         ApiKeyFilePath = $secret_file_path
-        HttpSingingHeader =  @("(request-target)", "Host", "Date", "Digest")
+        HttpSigningHeader =  @("(request-target)", "Host", "Date", "Digest")
     }
     Set-IntersightConfiguration @connection
     Write-Host "Successfully configured to Intersight"
