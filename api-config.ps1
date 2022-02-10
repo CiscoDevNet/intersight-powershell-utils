@@ -34,6 +34,6 @@ $ApiParams = @{
     BasePath          = $BasePath
     ApiKeyId          = $ApiKeyId
     ApiKeyFilePath    = $ApiKeyFilePath
-    HttpSingingHeader = @("(request-target)", "Host", "Date", "Digest")
+    HttpSigningHeader = @("(request-target)", "Host", "Date", "Digest")
 }
 Set-IntersightConfiguration @ApiParams
