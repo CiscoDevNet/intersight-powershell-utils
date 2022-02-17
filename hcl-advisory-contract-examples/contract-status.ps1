@@ -15,7 +15,7 @@ or implied.
 [cmdletbinding()]
 param(
     # .csv file where results will be written
-    [string]$CsvFile = "advisory_export.csv"
+    [string]$CsvFile = "contract_status_summary.csv"
 )
 
 # configure api signing params
@@ -24,29 +24,13 @@ param(
 $FilePath = "$PSScriptRoot\$CsvFile"
 New-Item $FilePath -ItemType file -Force
 
-# get advisories by endpoint and write results to .csv file
+# get contract status by endpoint and write results to .csv file
 try {
     # select only what will be written to the .csv file
-    $SelectStr = 'Advisory,AffectedObject'
-    $Response = (Get-IntersightTamAdvisoryInstance -Select $SelectStr -Expand $SelectStr).Results
-    Write-Host $Response.count
-    $NameExp = @{
-        label      = 'Summary'
-        expression = { $_.Advisory.ActualInstance.Name }
-    }
-    $ObjectExp = @{
-        label      = 'ObjectType'
-        expression = { $_.AffectedObject.ActualInstance.ObjectType }
-    }
-    $ObjectExp = @{
-        label      = 'ObjectType'
-        expression = { $_.AffectedObject.ActualInstance.ObjectType }
-    }
-    $SerialExp = @{
-        label      = 'Moid'
-        expression = { $_.AffectedObject.ActualInstance.Moid }
-    }
-    $OutResponse = $Response | Select-Object $NameExp, $ObjectExp, $SerialExp
+    $SelectStr = 'ContractStatus,DeviceId,DeviceType,PlatformType,ServiceEndDate'
+    $Response = (Get-IntersightAssetDeviceContractInformation -Select $SelectStr -Top 1000).Results
+    Write-Host $Status $Response.count
+    $OutResponse = $Response | Select-Object PlatformType, DeviceType, DeviceId, ContractStatus, ServiceEndDate
     $OutResponse | Export-Csv -Path $FilePath -Append
 }
 catch {
