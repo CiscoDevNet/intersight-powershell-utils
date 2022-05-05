@@ -19,3 +19,18 @@ Details are exported to a .csv file specified by the -CsvFile command line argum
 
 This script uses the AdvisoryInstance resource in Intersight's API to collect advisory (Security Advisory and Field Notice) information and affected devices.
 Details are exported to a .csv file specified by the -CsvFile command line argument (default is advisory_export.csv).
+
+---
+
+### `contract-status.ps1`
+
+This script uses the ContractInformation resource in Intersight's API to collect Contract Coverage Status.
+Details are exported to a .csv file specified by the -CsvFile command line argument (default is contract_status_summary.csv).
+
+---
+
+### `dimm-serials.ps1`
+
+This script collects DIMM Serial Number, Location, and Device Hostname information from Intersight's MemoryUnit API resource.
+The information can be used in Field Notice affected device lookup.
+Details are exported to a .csv file specified by the -CsvFile command line argument (default is dimm_serial_summary.csv).
