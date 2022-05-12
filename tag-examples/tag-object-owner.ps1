@@ -22,14 +22,11 @@ param()
 # each line in the CSV file enumerates a different class and the cmdlet
 # required to update the tags for objects of that class
 foreach ($class in Import-Csv classes.csv) {
+
     # use the search API to find all objects of the given class, returning
     # only the Tags for each object to minimize payload size
     $searchItems = (Get-IntersightSearchSearchItem -Filter "ClassId eq $($class.classid)" -Select Tags).Results 
     foreach ($p in $searchItems) {
-        # retrieve the email address of the person who created the object
-        # from the audit log
-        $email = (Get-IntersightAaaAuditRecord -Filter "ObjectMoid eq '$($p.Moid)' and Event eq Created" -Select Email).Results.Email
-        $author = $email -replace '@.*', ''
 
         # create a new array of Tags and copy all of the existing tags
         $update_needed = $true
@@ -43,13 +40,32 @@ foreach ($class in Import-Csv classes.csv) {
                 $update_needed = $false
             }
         }
-        
-        # write the tags to the managed object in Intersight if needed
+
+        # get the email of the author and write the owner tag if no owner tag exists
         if ($update_needed) {
+            # retrieve the email address of the person who created the object
+            # from the audit log
+            try {
+                $email = (Get-IntersightAaaAuditRecord -Filter "ObjectMoid eq '$($p.Moid)' and Event eq Created" -Select Email).Results.Email
+            }
+            catch {
+                $email = ""
+                Write-Error "Error auditing $($class.classid) with moid $($p.Moid)"
+            }
+            # if the audit record does not exist, set the author to "unknown"
+            $author = $null -eq $email ? "unknown" : ($email -split '@')[0] 
+
             # add the owner to the list of tags
             $new_tags += Initialize-IntersightMoTag -Key "owner"  -Value $author
             $moid = $p.Moid
-            Write-Host (Invoke-Expression -Command $class.setcmd).Name
+            try {
+                # the "set" command for the class is pulled from the CSV file
+                $command = $class.setcmd + ' -Moid $moid -Tags $new_tags'
+                Write-Host (Invoke-Expression -Command $command).Name
+            }
+            catch {
+                Write-Error "Error updating tags for $($class.classid) with moid $($moid)"
+            }
             Write-Verbose "$($class.classid):$($moid) --> author tag set to $($author)"
         }
     }
