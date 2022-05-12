@@ -1,12 +1,49 @@
-classid,getcmd,setcmd
-bios.Policy,Get-IntersightBiosPolicyList,Set-IntersightBiosPolicy -Tags $new_tags -Moid $moid
-deviceconnector.Policy,Get-IntersightDeviceconnectorPolicyList,Set-IntersightDeviceconnectorPolicy -Tags $new_tags -Moid $moid
-kvm.Policy,Get-IntersightKvmPolicyList,Set-IntersightKvmPolicy -Tags $new_tags -Moid $moid
-ntp.Policy,Get-IntersightNtpPolicyList,Set-IntersightNtpPolicy -Tags $new_tags -Moid $moid
-vnic.LanConnectivityPolicy,Get-IntersightVnicLanConnectivityPolicyList,Set-IntersightVnicLanConnectivityPolicy -Tags $new_tags -Moid $moid
-vmedia.Policy,Get-IntersightVmediaPolicyList,Set-IntersightVmediaPolicy -Tags $new_tags -Moid $moid
-hyperflex.ClusterProfile,Get-IntersightHyperflexClusterProfileList,Set-IntersightHyperflexClusterProfile -Tags $new_tags -Moid $moid
-server.Profile,Get-IntersightServerProfileList,Set-IntersightServerProfile -Tags $new_tags -Moid $moid
-storage.StoragePolicy,Get-IntersightStorageStoragePolicyList,Set-IntersightStorageStoragePolicy -Tags $new_tags -Moid $moid
-kubernetes.ClusterProfile,Get-IntersightKubernetesClusterProfileList,Set-IntersightKubernetesClusterProfile -Tags $new_tags -Moid $moid
-macpool.Pool,Get-IntersightMacpoolPoolList,Set-IntersightMacpoolPool -Tags $new_tags -Moid $moid
+classid,setcmd
+bios.Policy,Set-IntersightBiosPolicy
+boot.PrecisionPolicy,Set-IntersightBootPrecisionPolicy
+chassis.Profile,Set-IntersightChassisProfile
+deviceconnector.Policy,Set-IntersightDeviceconnectorPolicy
+fabric.FcNetworkPolicy,Set-IntersightFabricSystemQosPolicy
+fabric.MulticastPolicy,Set-IntersightFabricMulticastPolicy
+fabric.PortPolicy,Set-IntersightFabricPortPolicy
+fabric.SwitchClusterProfile,Set-IntersightFabricSwitchClusterProfile
+fabric.SystemQosPolicy,Set-IntersightFabricSystemQosPolicy
+hyperflex.AutoSupportPolicy,Set-IntersightHyperflexAutoSupportPolicy
+hyperflex.ClusterNetworkPolicy,Set-IntersightHyperflexClusterNetworkPolicy
+hyperflex.ClusterProfile,Set-IntersightHyperflexClusterProfile
+hyperflex.ClusterStoragePolicy,Set-IntersightHyperflexClusterStoragePolicy
+hyperflex.LocalCredentialPolicy,Set-IntersightHyperflexLocalCredentialPolicy
+hyperflex.NodeConfigPolicy,Set-IntersightHyperflexNodeConfigPolicy
+hyperflex.ProxySettingPolicy,Set-IntersightHyperflexProxySettingPolicy
+hyperflex.SysConfigPolicy,Set-IntersightHyperflexSysConfigPolicy
+hyperflex.UcsmConfigPolicy,Set-IntersightHyperflexUcsmConfigPolicy
+hyperflex.VcenterConfigPolicy,Set-IntersightHyperflexVcenterConfigPolicy
+iam.EndPointUserPolicy,Set-IntersightIamEndPointUserPolicy
+iam.LdapPolicy,Set-IntersightIamLdapPolicy
+ipmioverlan.Policy,Set-IntersightIpmioverlanPolicy
+kubernetes.AddonPolicy,Set-IntersightKubernetesAddonPolicy
+kubernetes.ClusterProfile,Set-IntersightKubernetesClusterProfile
+kubernetes.NetworkPolicy,Set-IntersightKubernetesNetworkPolicy
+kubernetes.SysConfigPolicy,Set-IntersightKubernetesSysConfigPolicy
+kubernetes.VersionPolicy,Set-IntersightKubernetesVersionPolicy
+kubernetes.VirtualMachineInfraConfigPolicy,Set-IntersightKubernetesVirtualMachineInfraConfigPolicy
+kubernetes.VirtualMachineInstanceType,Set-IntersightKubernetesVirtualMachineInstanceType
+kvm.Policy,Set-IntersightKvmPolicy
+macpool.Pool,Set-IntersightMacpoolPool
+networkconfig.Policy,Set-IntersightNetworkconfigPolicy
+ntp.Policy,Set-IntersightNtpPolicy
+sdcard.Policy,Set-IntersightSdcardPolicy
+server.Profile,Set-IntersightServerProfile
+server.ProfileTemplate,Set-IntersightServerProfileTemplate
+snmp.Policy,Set-IntersightSnmpPolicy
+sol.Policy,Set-IntersightSolPolicy
+ssh.Policy,Set-IntersightSshPolicy
+storage.StoragePolicy,Set-IntersightStorageStoragePolicy
+syslog.Policy,Set-IntersightSyslogPolicy
+vmedia.Policy,Set-IntersightVmediaPolicy
+vnic.EthNetworkPolicy,Set-IntersightVnicEthNetworkPolicy
+vnic.EthQosPolicy,Set-IntersightVnicEthQosPolicy
+vnic.FcNetworkPolicy,Set-IntersightVnicFcNetworkPolicy
+vnic.FcQosPolicy,Set-IntersightVnicFcQosPolicy
+vnic.LanConnectivityPolicy,Set-IntersightVnicLanConnectivityPolicy
+vnic.SanConnectivityPolicy,Set-IntersightVnicSanConnectivityPolicy
