@@ -35,3 +35,7 @@ This example will create, update, and delete a KVM policy. It shows how to creat
 ### `ntp-policy.ps1`
 
 This example will create, update, and delete an NTP policy. It shows how to create a policy using the SDK's `initialize` cmdlet; how to *update* a policy with a simple PowerShell object; and how to delete a policy using the `Moid` of that policy.
+
+### `lan-connectivity.ps1`
+
+This example will create and delete a LAN Connectivity policy with a vNIC. It shows how to create the policy and lookup other required ethernet policies using the SDK.
