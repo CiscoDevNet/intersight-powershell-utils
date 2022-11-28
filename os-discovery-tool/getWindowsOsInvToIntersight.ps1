@@ -608,8 +608,12 @@ Function ValidateEnv {
         }
 
         $secret_file_path = $env:USERPROFILE+"\"+$env.config.intersight_secret_file
-        if(!(Test-Path -PathType Leaf $secret_file_path) -or !(Test-Path -PathType Container $env.config.logfile_path)) {
-            Write-Host -ForegroundColor Red "[ERROR]: intersight_secret_file, and logfile_path must exist! Cannot Proceed..."
+        if(!(Test-Path -PathType Leaf $secret_file_path)) {
+            Write-Host -ForegroundColor Red "[ERROR]: intersight_secret_file must exist! Cannot Proceed..."
+            exit
+        }
+        if(!(Test-Path -PathType Container $env.config.logfile_path)) {
+            Write-Host -ForegroundColor Red "[ERROR]: logfile_path must exist! Cannot Proceed..."
             exit
         }
         Write-Host -ForegroundColor Green "[INFO]: Configurations in {$configfile}, validation succeeded!"
