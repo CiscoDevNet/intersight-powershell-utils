@@ -461,7 +461,12 @@ Function ConnectIntersight {
     WriteLog $env "INFO" "Using the New Intersight SDK"
     WriteLog $env "INFO" "Connecting to Cisco Intersight(TM) URL with API Keys:"
     WriteLog $env "INFO" $env.config.intersight_url
-    $secret_file_path = $env:USERPROFILE+"\"+$env.config.intersight_secret_file
+	if($env.config.intersight_secret_file -like "*:*"){
+		$secret_file_path = $env.config.intersight_secret_file
+		}
+	else{
+	    $secret_file_path = $env:USERPROFILE+"\"+$env.config.intersight_secret_file
+    	}
     WriteLog $env "INFO" $secret_file_path
     WriteLog $env "INFO" $env.config.intersight_api_key
     try {
@@ -607,9 +612,19 @@ Function ValidateEnv {
             exit
         }
 
-        $secret_file_path = $env:USERPROFILE+"\"+$env.config.intersight_secret_file
-        if(!(Test-Path -PathType Leaf $secret_file_path) -or !(Test-Path -PathType Container $env.config.logfile_path)) {
-            Write-Host -ForegroundColor Red "[ERROR]: intersight_secret_file, and logfile_path must exist! Cannot Proceed..."
+        if($env.config.intersight_secret_file -like "*:*"){
+            $secret_file_path = $env.config.intersight_secret_file
+            }
+        else{
+            $secret_file_path = $env:USERPROFILE+"\"+$env.config.intersight_secret_file
+            }
+
+        if(!(Test-Path -PathType Leaf $secret_file_path)) {
+            Write-Host -ForegroundColor Red "[ERROR]: intersight_secret_file must exist! Cannot Proceed..."
+            exit
+        }
+        if(!(Test-Path -PathType Container $env.config.logfile_path)) {
+            Write-Host -ForegroundColor Red "[ERROR]: logfile_path must exist! Cannot Proceed..."
             exit
         }
         Write-Host -ForegroundColor Green "[INFO]: Configurations in {$configfile}, validation succeeded!"
