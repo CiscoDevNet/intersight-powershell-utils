@@ -53,3 +53,13 @@ This script adds the specified tag to every server in your Intersight account wh
 ```powershell
 tag-servers-locator.ps1 -Key location -Value austin
 ```
+
+---
+
+### `alarm-tags.ps1`
+
+This script gets active alarms and displays any tags attached to the affected Managed Object.
+
+```powershell
+alarm-tags.ps1
+```
