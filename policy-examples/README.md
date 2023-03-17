@@ -39,3 +39,13 @@ This example will create, update, and delete an NTP policy. It shows how to crea
 ### `lan-connectivity.ps1`
 
 This example will create and delete a LAN Connectivity policy with a vNIC. It shows how to create the policy and lookup other required ethernet policies using the SDK.
+
+
+### `chassis-snmppolicy.ps1`
+
+This example will update an existing Chassis Profile with a reference to a new SNMP policy and deploy the changes to the Chassis Profile
+
+
+### `edit-vlans-in-fabricethpolicy.ps1`
+
+This example will update all the vlans in a Fabric Ethernet Network Policy to AutoAllowOnUplinks to True
