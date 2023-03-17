@@ -17,7 +17,7 @@ or implied.
 # configure api signing params
 . "$PSScriptRoot\..\api-config.ps1"
 
-#Get default organization
+#Get Default organization
 $defaultorg = Get-IntersightOrganizationOrganization -Name 'default'
 
 #Get chassis profile to modify
