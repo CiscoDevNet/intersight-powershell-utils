@@ -40,7 +40,7 @@ $deviceconnections = Invoke-RestMethod -Method 'GET' -Uri $deviceconnections_url
 $deviceidentifiers = Invoke-RestMethod -Method 'GET' -Uri $deviceidentifiers_url -Headers $headers -SkipCertificateCheck
 $securitytokens = Invoke-RestMethod -Method 'GET' -Uri $securitytokens_url -Headers $headers -SkipCertificateCheck
 
-#Connect to Intersight and claim device
+#Connect to Intersight and claim device, remember to specify your ApiKeyId and ApiKeyFilePath
 
 $ApiParams = @{
 BasePath = "https://intersight.com"
