@@ -36,10 +36,7 @@ IPMIUtil 3.1.9+ (https://ipmiutil.sourceforge.net/)
 
 Confirm all pre-requisite packages are installed
 
-Set location in script to ipmiutil binary
-$ipmiutilpath = "C:\temp\ipmiutil.exe"
-
-With a privileged user account run agent.ps1 or setup a scheduled task to run at boot and preferably every 24 hours
+With a privileged user account run "agent.ps1 c:\pathto\ipmiutil.exe" manually or setup a scheduled task to run the script at boot and preferably every 24 hours
 
 Check Host HCL status in Intersight to see populate OS & driver info
 
