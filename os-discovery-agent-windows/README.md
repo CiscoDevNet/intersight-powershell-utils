@@ -1,4 +1,4 @@
-# OS Discovery Agent For Linux
+# OS Discovery Agent For Windows
 
 ## Description
 
@@ -6,7 +6,7 @@
 
 _functions.ps1_ - Helper functions from original OS Discovery Tool used to gather local host inventory
 
-_agent.ps1_  - Creates host-inv.yaml file and writes it to the IMC via IPMI
+_agent.ps1_  - Using functions.ps1 it creates host-inv.yaml file and writes it to the IMC via IPMI
 
 ![Example Image](Readme-example.png)
 
@@ -27,8 +27,8 @@ Privileged account on host that can issue ipmi commands and retrieve local inven
 
 **Host Software Requirements:**
 
-Powershell 7
-IPMIUtil (https://ipmiutil.sourceforge.net/)
+Powershell 7.2+
+IPMIUtil 3.1.9+ (https://ipmiutil.sourceforge.net/)
 
 
 ## Usage
