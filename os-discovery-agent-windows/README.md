@@ -22,12 +22,13 @@ _agent.ps1_  - Using functions.ps1 it creates host-inv.yaml file and writes it t
 **System Requirements:**
 Windows Server 2012+
 
-Privileged account on host that can issue ipmi commands and retrieve local inventory
+Privileged account on host that can issue ipmiutil commands and retrieve local inventory
 
 
 **Host Software Requirements:**
 
 Powershell 7.2+
+
 IPMIUtil 3.1.9+ (https://ipmiutil.sourceforge.net/)
 
 
