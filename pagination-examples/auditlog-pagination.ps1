@@ -17,20 +17,21 @@ or implied.
 # configure api signing params
 . "$PSScriptRoot\..\api-config.ps1"
 
-# Configure maximum top value and define filter and select values
+# Configure maximum top value and define odata filter, select, and orderby values
 $top=1000
 $select="Event,Email,CreateTime"
 $filter="MoType eq 'iam.User'"
+$orderby="CreateTime desc"
 
 # Get the total record count for our matching filter on the aaa.AuditRecord endpoint
-$recordCount = Get-IntersightAaaAuditRecord -Select $select  -Filter $filter  -Count $true
+$recordCount = Get-IntersightAaaAuditRecord -Select $select -Filter $filter -Count $true
 
 # Divide this by the top value and round up to use as our loop counter
 $pages = [Math]::Ceiling($recordCount.Count/$top)
 
 Write-Output ("Total Matching Records:" + $recordCount.Count)
 
-# Loop through the number of times defined by the recordcount/top incrementing the skip counter to get the next X records on each loop
+# Loop through the number of times defined by the returned recordcount/top, incrementing the skip counter to get the next X records on each loop
 for ($x=0; $x -lt $pages; $x++) {
-    Get-IntersightAaaAuditRecord -Select $select -Filter $filter -Top $top -Skip ($x*$top) | Select-Object -Expand Results | Select Event,Email,CreateTime
+    Get-IntersightAaaAuditRecord -Select $select -Filter $filter -Top $top -Skip ($x*$top) -OrderBy $orderby | Select-Object -Expand Results | Select Event,Email,CreateTime
 }
