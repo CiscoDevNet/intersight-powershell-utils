@@ -10,4 +10,4 @@ Authorization is performed by every Intersight cmdlet. You must properly configu
 
 ### `auditlog-pagination.ps1`
 
-This script provides a basic example of paginating the results of the aaa.AuditRecord endpoint as this can easily have 100's or 1000's of entries.
+This script provides a basic example of paginating the results of the aaa.AuditRecord endpoint as this can easily have 1000's of entries which cannot be retrieved in a single call.
