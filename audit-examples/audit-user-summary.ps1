@@ -27,4 +27,5 @@ param(
         -Filter "contains(Email, '$($Email)')" `
         -Apply 'groupby((MoType), aggregate(CreateTime with max as Latest))' `
         -Orderby Latest `
+        -Json | ConvertFrom-Json
 ).Results

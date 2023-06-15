@@ -33,6 +33,7 @@ $data = (Get-IntersightAaaAuditRecord `
         -Filter $moid_filter `
         -Select 'Email,CreateTime,Event,Request' `
         -Orderby CreateTime `
+        -Json | ConvertFrom-Json
 ).Results
 
 # Write each audit log entry to its own file in JSON format with the date of
