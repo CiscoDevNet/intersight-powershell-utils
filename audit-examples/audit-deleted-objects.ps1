@@ -31,7 +31,8 @@ $myfilter = "Event eq Deleted and CreateTime gt $mydate"
 $data = (Get-IntersightAaaAuditRecord `
         -Filter $myfilter `
         -Orderby CreateTime `
-        -Select 'CreateTime,Email,MoDisplayNames'
+        -Select 'CreateTime,Email,MoDisplayNames' `
+        -Json | ConvertFrom-Json
 ).Results
 
 # add the name of the deleted object to each "row" of results from the API
