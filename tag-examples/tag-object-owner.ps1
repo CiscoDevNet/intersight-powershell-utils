@@ -61,10 +61,10 @@ foreach ($class in Import-Csv classes.csv) {
             try {
                 # the "set" command for the class is pulled from the CSV file
                 $command = $class.setcmd + ' -Moid $moid -Tags $new_tags'
-                Write-Host (Invoke-Expression -Command $command).Name
+                Write-Host (Invoke-Expression -Command $command).Name " owner: $($author)"
             }
             catch {
-                Write-Error "Error updating tags for $($class.classid) with moid $($moid)"
+                Write-Error "Error updating tags for $($class.classid) with moid $($moid) with owner=$($author)"
             }
             Write-Verbose "$($class.classid):$($moid) --> author tag set to $($author)"
         }
