@@ -30,7 +30,7 @@ foreach ($Status in $Statuses) {
     try {
         $SelectStr = 'ManagedObject,InvModel,HclFirmwareVersion,HclOsVendor,HclOsVersion,HardwareStatus,SoftwareStatus,Status,Reason'
         # API filter by status and select only what will be written to the .csv file
-        $Response = (Get-IntersightCondHclStatus -filter "Status eq '$Status'" -Select $SelectStr -Expand ManagedObject).Results
+        $Response = (Get-IntersightCondHclStatus -top 1000 -filter "Status eq '$Status'" -Select $SelectStr -Expand ManagedObject).Results
         Write-Host $Status $Response.count
         $SerialExp = @{
             label      = 'Serial'
