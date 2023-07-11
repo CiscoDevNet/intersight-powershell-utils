@@ -4,7 +4,7 @@
 
 Authorization is performed by every Intersight cmdlet. You must properly configure the Intersight PowerShell module parameters using the `Set-IntersightConfiguration` cmdlet as described in the [Getting Started](https://github.com/CiscoDevNet/intersight-powershell/blob/master/GettingStarted.md) page of the Intersight module code.  Scripts in this directory use the ..\api-config.ps1 script to set the config.
 
-## Examples
+## Policy Examples
 
 ---
 
@@ -14,6 +14,22 @@ This script creates a Port Policy for UCS Domains based on the video overview at
 
 ```powershell
 port-policy.ps1
+```
+
+### `vlan-policy.ps1`
+
+This script creates a VLAN Policy for UCS Domains based on the video overview at https://www.youtube.com/watch?v=M3Yo86f-ksk .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
+
+```powershell
+vlan-policy.ps1
+```
+
+### `vsan-policy.ps1`
+
+This script creates a VSAN Policy for UCS Domains based on the video overview at https://www.youtube.com/watch?v=fwmRweCfip4 .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
+
+```powershell
+vsan-policy.ps1
 ```
 
 ### `syslog-policy.ps1`
@@ -32,6 +48,14 @@ This script creates a Network Connectivity Policy for UCS Domains based on the v
 net-connectivity-policy.ps1
 ```
 
+### `snmp-policy.ps1`
+
+This script creates a SNMP Policy for UCS Domains based on the video overview at https://www.youtube.com/watch?v=ZNF-3kZA2ZY .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
+
+```powershell
+snmp-policy.ps1
+```
+
 ### `system-qos-policy.ps1`
 
 This script creates a System QoS Policy for UCS Domains based on the video overview at https://www.youtube.com/watch?v=mn9Uqn6mZoA .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
@@ -46,4 +70,16 @@ This script creates a Switch Control Policy for UCS Domains based on the video o
 
 ```powershell
 switch-control-policy.ps1
+```
+
+## Profile Examples
+
+---
+
+### `domain-profile.ps1`
+
+This script creates a Domain Profile for UCS Domains based on the video overview at https://www.youtube.com/watch?v=KpL9a_WFgjI .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
+
+```powershell
+domain-profile.ps1
 ```
