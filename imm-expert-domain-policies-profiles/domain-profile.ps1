@@ -10,33 +10,23 @@ $SwitchClusterProfile =New-IntersightFabricSwitchClusterProfile -Name "DevNet-Do
 $SwitchClusterProfileA = New-IntersightFabricSwitchProfile -Name "DevNet-DomainProfile-A" -SwitchClusterProfile $SwitchClusterProfile
 $SwitchClusterProfileB = New-IntersightFabricSwitchProfile -Name "DevNet-DomainProfile-B" -SwitchClusterProfile $SwitchClusterProfile
 
-$PolicyBucket33 = Get-IntersightFabricEthNetworkPolicy -Name "DevNet-VLAN-Fabric-A" | Get-IntersightMoMoRef
-$moA = $SwitchClusterProfileA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket33
-$moB = $SwitchClusterProfileB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket33
+$PolicyBucketList = @()
+$PolicyBucketList += Get-IntersightFabricPortPolicy -Name "DevNet-6536-100-A" | Get-IntersightMoMoRef
 
-$PolicyBucket44 = Get-IntersightFabricFcNetworkPolicy -Name "DevNet-VSAN-Fabric-A" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket44
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket44
+$PolicyBucketList +=  Get-IntersightSyslogPolicy -Name "DevNet-Syslog" | Get-IntersightMoMoRef
 
-$PolicyBucket55 = Get-IntersightFabricPortPolicy -Name "DevNet-6536-100-A" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket55
+$PolicyBucketList +=  Get-IntersightNetworkconfigPolicy -Name "DevNet-NetConnectivity" | Get-IntersightMoMoRef
 
-$PolicyBucket66 = Get-IntersightSyslogPolicy -Name "DevNet-Syslog" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket66
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket66
+$PolicyBucketList +=  Get-IntersightSnmpPolicy -Name "DevNet-Domain-SNMP" | Get-IntersightMoMoRef
 
-$PolicyBucket77 = Get-IntersightNetworkconfigPolicy -Name "DevNet-NetConnectivity" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket77
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket77
+$PolicyBucketList += Get-IntersightFabricSystemQosPolicy -Name "DevNet-SystemQoS" | Get-IntersightMoMoRef
 
-$PolicyBucket88 = Get-IntersightSnmpPolicy -Name "DevNet-Domain-SNMP" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket88
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket88
+$PolicyBucketList += Get-IntersightFabricSwitchControlPolicy -Name "DevNet-SwitchControl" | Get-IntersightMoMoRef
+$moB = $SwitchClusterProfileB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucketList
+$moB
 
-$PolicyBucket99 = Get-IntersightFabricSystemQosPolicy -Name "DevNet-SystemQoS" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket99
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket99
+$PolicyBucketList += Get-IntersightFabricEthNetworkPolicy -Name "DevNet-VLAN-Fabric-A" | Get-IntersightMoMoRef
 
-$PolicyBucket1010 = Get-IntersightFabricSwitchControlPolicy -Name "DevNet-SwitchControl" | Get-IntersightMoMoRef
-$moA = $moA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket1010
-$moB = $moB | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucket1010
+$PolicyBucketList += Get-IntersightFabricFcNetworkPolicy -Name "DevNet-VSAN-Fabric-A" | Get-IntersightMoMoRef
+$moA = $SwitchClusterProfileA | Set-IntersightFabricSwitchProfile -PolicyBucket $PolicyBucketList
+$moA
