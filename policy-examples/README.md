@@ -2,7 +2,7 @@
 
 ## Authorization
 
-Authorization is performed by every Intersight cmdlet. You must properly configure the Intersight PowerShell module parameters using the `Set-IntersightConfiguration` cmdlet as described in the [Getting Started](https://github.com/CiscoDevNet/intersight-powershell/blob/master/GettingStarted.md) page of the Intersight module code.
+Authorization is performed by every Intersight cmdlet. You must properly configure the Intersight PowerShell module parameters using the `Set-IntersightConfiguration` cmdlet as described in the [Getting Started](https://github.com/CiscoDevNet/intersight-powershell/blob/master/GettingStarted.md) page of the Intersight module code.  Scripts in this directory use the ..\api-config.ps1 script to set the config.
 
 ## Examples
 
@@ -49,3 +49,7 @@ This example will update an existing Chassis Profile with a reference to a new S
 ### `edit-vlans-in-fabricethpolicy.ps1`
 
 This example will update all the vlans in a Fabric Ethernet Network Policy to AutoAllowOnUplinks to True
+
+### `bios-policy.ps1`
+
+Example of creating a new BIOS policy then updating settings in the policy.
