@@ -15,3 +15,11 @@ This script creates a BIOS Policy for Servers based on the video overview at htt
 ```powershell
 bios-policy.ps1
 ```
+
+### `boot-policy.ps1`
+
+This script creates a Boot Policy for Servers based on the video overview at https://youtu.be/nm5gmrx5B1E .  The code is auto-generated from UI actions using Intersight's API Interceptor Chrome extension.
+
+```powershell
+boot-policy.ps1
+```
