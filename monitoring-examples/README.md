@@ -11,3 +11,7 @@ Authorization is performed by every Intersight cmdlet. You must properly configu
 ### `cpu-user-stats.ps1`
 
 This script provides an example of using the telemetry/TimeSeries API to collect User CPU Utilization stats.  The query code is taken from Intersight's Explorer UI as shown in the lower right of the screenshot below ![screenshot](images/cpu-user.png)
+
+### `sys-memory-utilization-avg.ps1`
+
+Provides an example of using the telemetry/TimeSeries API to collect FI System Memory Utilization.  The query code is taken from Intersight's Explorer UI as shown above and shows how to process an array payload.

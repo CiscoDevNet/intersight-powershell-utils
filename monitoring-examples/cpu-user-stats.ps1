@@ -66,5 +66,6 @@ $query = @"
 $query = $query | ConvertFrom-Json -AsHashTable
 
 $results = (New-IntersightManagedObject -ObjectType telemetry.TimeSerie -AdditionalProperties $query | ConvertFrom-Json)
-
-Write-Output $results.timestamp[0] $results.event 
+foreach ($result in $results) {
+  Write-Output $result.timestamp $result.event
+}
