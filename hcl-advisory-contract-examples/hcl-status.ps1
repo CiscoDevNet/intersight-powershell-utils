@@ -32,13 +32,12 @@ foreach ($Status in $Statuses) {
         # API filter by status and select only what will be written to the .csv file
         $Response = (Get-IntersightCondHclStatus -top 1000 -filter "Status eq '$Status'" -Select $SelectStr -Expand ManagedObject).Results
         Write-Host $Status $Response.count
-        $SerialExp = @{
-            label      = 'Serial'
-            # Serial is supported in upcoming SDKs, for now DN is used
-            expression = { $_.ManagedObject.ActualInstance.Dn }
+        $NameExp = @{
+            label      = 'Name'
+            expression = { $_.ManagedObject.ActualInstance.AdditionalProperties.Name }
         }
         # $OutResponse = $Response | Select-Object InvModel,ManagedObject.ActualInstance.Dn,Status,HclFirmwareVersion,HclOsVendor,HclOsVersion,HardwareStatus,SoftwareStatus,Reason
-        $OutResponse = $Response | Select-Object InvModel, $SerialExp, Status, HclFirmwareVersion, HclOsVendor, HclOsVersion, HardwareStatus, SoftwareStatus, Reason
+        $OutResponse = $Response | Select-Object InvModel, $NameExp, Status, HclFirmwareVersion, HclOsVendor, HclOsVersion, HardwareStatus, SoftwareStatus, Reason
         $OutResponse | Export-Csv -Path $FilePath -Append
     }
     catch {
