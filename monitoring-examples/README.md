@@ -15,3 +15,7 @@ This script provides an example of using the telemetry/TimeSeries API to collect
 ### `sys-memory-utilization-avg.ps1`
 
 Provides an example of using the telemetry/TimeSeries API to collect FI System Memory Utilization.  The query code is taken from Intersight's Explorer UI as shown above and shows how to process an array payload.
+
+### `network-utilization-avg.ps1`
+
+Provides an example of using the telemetry/TimeSeries API to collect Average Network Utilization and write results to .csv.  The query code is taken from Intersight's Explorer UI as shown above.
