@@ -23,3 +23,11 @@ This example will deploy and activate an existing Server Profile using the Sched
 ```powershell
 deploy-activate-server-profile.ps1
 ```
+
+### `change-template.ps1`
+
+This example will change the template linked to a server profile using the options specified in the parameters.
+
+```powershell
+change-template.ps1
+```
