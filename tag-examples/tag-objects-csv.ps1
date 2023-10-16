@@ -18,31 +18,55 @@ param(
     [string]$CsvFile
 )
 
-function UpdateTags($current_tags, $row) {
-    # build a dictionary of existing tags
-    $tags = @{}
-    foreach($t in $current_tags) {
-        $tags[$t.Key] = $t.Value
+<#
+.SYNOPSIS
+Updates the existing tags of an Intersight object from a single CSV row.
+.DESCRIPTION
+Returns Intersight MoTags when given an object's current tags and a list of new or updated tags. Also returns a boolean indicating if the returned tags differ from the ExistingTags.
+.PARAMETER ExistingTags
+The current tags for the Intersight object.
+.PARAMETER AdditionalTags
+An object containing key:value pairs to use for updating tags. This is normally a single row of a CSV file.
+#>
+function UpdateTags {
+    param(
+        [Parameter(ValueFromPipeline, Mandatory = $true)]
+        [PSCustomObject[]]$ExistingTags,
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject]$AdditionalTags
+    )
+    begin {
+        # initialize an empty hash for existing tags
+        $mo_tags = @{}
+        $flag = $false
     }
-
-    $hashcode_snapshot = $tags.GetHashCode()
-
-    # update the dictionary with the values from the CSV
-    $row.PSObject.Properties | ForEach-Object {
-        if ([string]::IsNullOrEmpty($_.Value)) { 
-            continue 
+    process {
+        # Build a dictionary of existing tags. This code will add all
+        # existing tags to a hash.
+        foreach ($t in $ExistingTags) {
+            Write-Debug "Processing $($t.Key)"
+            $mo_tags.Add($t.Key, $t.Value)
         }
-        $tags[$_.Name] = $_.Value
     }
-
-    if ($flag) {
-        Write-Host "$($serial) must be updated"
-    }
-
-    # build the tag structure required by Intersight from this dictionary
-    $new_tags = @()
-    foreach($k in $tags.Keys) {
-        $new_tags += Initialize-IntersightMoTag -Key $k -Value $tags[$k]
+    end {
+        $AdditionalTags.PSObject.Properties | ForEach-Object {
+            if ([string]::IsNullOrEmpty($_.Value)) { 
+                continue 
+            }
+            if ( ! $mo_tags.ContainsKey($_.Name) ) {
+                $flag = $true
+            }
+            elseif ( $mo_tags[$_.Name] -ne $_.Value ) {
+                $flag = $true
+            }
+            $mo_tags[$_.Name] = $_.Value
+        }
+        # build the tag structure required by Intersight from this dictionary
+        $new_tags = @()
+        foreach ($k in $mo_tags.Keys) {
+            $new_tags += Initialize-IntersightMoTag -Key $k -Value $mo_tags[$k]
+        }
+        return $flag, $new_tags
     }
 }
 
@@ -51,58 +75,41 @@ function UpdateTags($current_tags, $row) {
 
 foreach ($csv_row in (Import-Csv $CsvFile)) {
     # get the server Moid by searching for the server by serial number
-    $myfilter = "Serial eq '$($csv_row.serial)'"
+    $serial = $csv_row.serial
+    $myfilter = "Serial eq '$($serial)'"
     $response = (Get-IntersightSearchSearchItem -Filter $myfilter -Select Tags).Results
 
-    # remove serial number because we don't need it anymore and don't want
-    # it applied as a tag
+    # remove serial number because we don't want it applied as a tag
     $csv_row.PSObject.Properties.Remove('serial')
 
-    foreach($object in $response) {
+    foreach ($object in $response) {
 
         
-
         switch ($object.ClassId) {
             NetworkElement { 
-                Write-Host "$($csv_row.serial): NetworkElement"
-                Write-Host $new_tags
-             }
-            ComputeRackUnit {
-                # Write-Host "$($csv_row.serial): ComputeRackUnit"
-                # Write-Host $new_tags
-
-                Write-Host $hashcode_snapshot
-                Write-Host $tags.GetHashCode()
-
-                if ($hashcode_snapshot -ne $tags.GetHashCode()) {
-                    Write-Host "$($serial) has been changed"
+                $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
+                if ($update) {
+                    Set-IntersightNetworkElement -Moid $object.Moid -Tags $new_tags | Out-Null
+                    Write-Host "$($serial): $($object.ClassId)"
                 }
-
-                (Set-IntersightComputeRackUnit -Moid $object.moid -Tags $new_tags).Serial
-
             }
-            Default { }
+            ComputeRackUnit {
+                $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
+                if ($update) {
+                    Set-IntersightComputeRackUnit -Moid $object.Moid -Tags $new_tags | Out-Null
+                    Write-Host "$($serial): $($object.ClassId)"
+                }
+            }
+            EquipmentChassis {
+                $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
+                if ($update) {
+                    Set-IntersightEquipmentChassis -Moid $object.Moid -Tags $new_tags | Out-Null
+                    Write-Host "$($serial): $($object.ClassId)"
+                }
+            }
+            Default { 
+                # Write-Host $object.ClassId 
+            }
         }
     }
-
-    # $moid = $response.moid
-
-    # if ($response.count -eq 0) {
-    #     Write-Host $csv_row.serial + " is not a rack server. Skipping..."
-    #     continue
-    # }
-
-
-    # # create tags based on column headings in the CSV file
-    # $tags = @()
-    # $csv_row.PSObject.Properties | ForEach-Object {
-    #     if ([string]::IsNullOrEmpty($_.Value)) { 
-    #         continue 
-    #     }
-    #     $tags += Initialize-IntersightMoTag -Key $_.Name -Value $_.Value
-    # }
-    
-    # # apply the new tags to the server, overwriting all existing tags and
-    # # display the serial number on the screen for feedback
-    # (Set-IntersightComputeRackUnit -Moid $moid -Tags $tags).Serial
 }
