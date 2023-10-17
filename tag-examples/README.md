@@ -18,21 +18,21 @@ This script depends on the file `classes.csv` and will only update those object 
 
 ---
 
-### `tag-servers-csv.ps1`
+### `tag-objects-csv.ps1`
 
-This script **overwrites** a server's tags with the tags specified in a CSV file. 
+This script **adds or modifies** an object's tags with the tags specified in a CSV file. It will not delete existing tags (though their value may be overwritten). The script currently supports rack servers, chassis, and fabric interconnects.
 
-```powershell
-tag-servers-csv.ps1 -CsvFile servers.csv
+```
+tag-objects-csv.ps1 -CsvFile mytags.csv
 ```
 
-**Caution**: a server's assigned license level is maintained as a tag, so be sure to include that in the CSV. The CSV should follow the format shown below. Every column (except serial number) represents the *key* for a tag that will be applied to a given server. License tier should follow the syntax shown here.
+The CSV should follow the format shown below. Every column (except serial number) represents the *key* for a tag that will be applied to a given server.
 
-|serial|tag_key1|tag_key2|Intersight.LicenseTier|
-|----|----|----|----|
-|server1 serial|tag_value|tag_value|server1 license tier|
-|server 2 serial|tag_value|tag_value|server1 license tier|
-|server 3 serial|tag_value|tag_value|server1 license tier|
+|serial|tag_key1|tag_key2|
+|----|----|----|
+|server 1 serial|tag_value|tag_value|
+|server 2 serial|tag_value|tag_value|
+|server 3 serial|tag_value|tag_value|
 
 
 
@@ -50,7 +50,7 @@ Here is an example with sample values in it. To add more tags, simply add more c
 
 This script adds the specified tag to every server in your Intersight account whose locator LED is turned on. This preserves all existing tags. The tag key and value are specified when calling the script as shown below.
 
-```powershell
+```
 tag-servers-locator.ps1 -Key location -Value austin
 ```
 
@@ -60,6 +60,6 @@ tag-servers-locator.ps1 -Key location -Value austin
 
 This script gets active alarms and displays any tags attached to the affected Managed Object.
 
-```powershell
+```
 alarm-tags.ps1
 ```

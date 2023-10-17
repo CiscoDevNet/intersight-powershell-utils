@@ -31,6 +31,7 @@ An object containing key:value pairs to use for updating tags. This is normally 
 function UpdateTags {
     param(
         [Parameter(ValueFromPipeline, Mandatory = $true)]
+        [AllowEmptyCollection()]
         [PSCustomObject[]]$ExistingTags,
         [Parameter(Mandatory = $true)]
         [PSCustomObject]$AdditionalTags
@@ -49,24 +50,24 @@ function UpdateTags {
         }
     }
     end {
-        $AdditionalTags.PSObject.Properties | ForEach-Object {
-            if ([string]::IsNullOrEmpty($_.Value)) { 
+        foreach($i in $AdditionalTags.PSObject.Properties) {
+            if ([string]::IsNullOrEmpty($i.Value)) { 
                 continue 
             }
-            if ( ! $mo_tags.ContainsKey($_.Name) ) {
+            if ( ! $mo_tags.ContainsKey($i.Name) ) {
                 $flag = $true
             }
-            elseif ( $mo_tags[$_.Name] -ne $_.Value ) {
+            elseif ( $mo_tags[$i.Name] -ne $i.Value ) {
                 $flag = $true
             }
-            $mo_tags[$_.Name] = $_.Value
+            $mo_tags[$i.Name] = $i.Value
         }
         # build the tag structure required by Intersight from this dictionary
-        $new_tags = @()
+        $local_new_tags = @()
         foreach ($k in $mo_tags.Keys) {
-            $new_tags += Initialize-IntersightMoTag -Key $k -Value $mo_tags[$k]
+            $local_new_tags += Initialize-IntersightMoTag -Key $k -Value $mo_tags[$k]
         }
-        return $flag, $new_tags
+        return $flag, $local_new_tags
     }
 }
 
@@ -74,7 +75,7 @@ function UpdateTags {
 . "$PSScriptRoot\..\api-config.ps1"
 
 foreach ($csv_row in (Import-Csv $CsvFile)) {
-    # get the server Moid by searching for the server by serial number
+    # get the object Moid by searching for the object by serial number
     $serial = $csv_row.serial
     $myfilter = "Serial eq '$($serial)'"
     $response = (Get-IntersightSearchSearchItem -Filter $myfilter -Select Tags).Results
@@ -86,7 +87,7 @@ foreach ($csv_row in (Import-Csv $CsvFile)) {
 
         
         switch ($object.ClassId) {
-            NetworkElement { 
+            NetworkElement {
                 $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
                 if ($update) {
                     Set-IntersightNetworkElement -Moid $object.Moid -Tags $new_tags | Out-Null
