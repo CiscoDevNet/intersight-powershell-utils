@@ -101,6 +101,13 @@ foreach ($csv_row in (Import-Csv $CsvFile)) {
                     Write-Host "$($serial): $($object.ClassId)"
                 }
             }
+            ComputeBlade {
+                $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
+                if ($update) {
+                    Set-IntersightComputeBlade -Moid $object.Moid -Tags $new_tags | Out-Null
+                    Write-Host "$($serial): $($object.ClassId)"
+                }
+            }
             EquipmentChassis {
                 $update, $new_tags = UpdateTags -ExistingTags $object.Tags -AdditionalTags $csv_row
                 if ($update) {
