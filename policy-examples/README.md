@@ -53,3 +53,7 @@ This example will update all the vlans in a Fabric Ethernet Network Policy to Au
 ### `bios-policy.ps1`
 
 Example of creating a new BIOS policy then updating settings in the policy.
+
+### `eth-net-group-vlans.ps1`
+
+Example of configuring VLANs in an Ethernet Network Group policy used by LAN Connectivity Policies
