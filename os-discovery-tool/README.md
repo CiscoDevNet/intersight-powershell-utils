@@ -41,6 +41,12 @@
           $ build.ps1
           $ Import-Module -Name '.\Intersight.PowerShell' -Verbose
         ```
+     - To uninstall PowerShell SDK:
+        ```Bash
+          $ Remove-Module -Name Intersight.PowerShell
+        ```
+
+**NOTE**: Make sure Intersight Powershell SDK is latest before running the ODT tool. current release version details: https://www.powershellgallery.com/packages/Intersight.PowerShell
 
   3. For VMware vSphere, install the **vSphere PowerCLI package** from:    
      https://my.vmware.com/web/vmware/details?downloadGroup=PCLI650R1&productId=614
