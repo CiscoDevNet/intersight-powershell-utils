@@ -41,6 +41,10 @@
           $ build.ps1
           $ Import-Module -Name '.\Intersight.PowerShell' -Verbose
         ```
+     - To get installed PowerShell SDK version:
+        ```Bash
+          $ Get-Module -Name Intersight.PowerShell | fl
+        ```
      - To uninstall PowerShell SDK:
         ```Bash
           $ Remove-Module -Name Intersight.PowerShell
