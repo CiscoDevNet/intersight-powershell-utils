@@ -3,7 +3,7 @@
 .SYNOPSIS
 ODT stands for OS Discovery Toolset.
 This is a simple ODT script to Discover ESX OS Inventory and TAG Servers managed by Cisco Intersight.
-It can be run via the Windows Task Scheduler to ensure regular refresh and is powered by Windows Powershell 7.1+
+It can be run via the Windows Task Scheduler to ensure regular refresh and is powered by Windows Powershell 7.3+
 
 .DESCRIPTION
 This tool needs to have generateSecureCredentials.ps1 to be run beforehand.
@@ -48,12 +48,40 @@ Function CheckVMWarePowerCLI
   }
 }
 
+function CheckAndInstallModule {
+    param (
+        [string] $ModuleName  
+        )
+    # Check for latest available Intersight PowerShell module 
+    $latestModule = Find-Module -Name $ModuleName 
+
+    # check the Intersight.PowerShell module
+    $psModule = Get-Module -Name $ModuleName -ListAvailable
+    if($psModule -ne $null -and $psModule.Length -gt 0){
+        $latestInstallModule = $psModule[0].Version
+    }
+    if(-not [string]::IsNullOrEmpty($latestInstallModule)){
+        
+        if($latestModule.Version -ne $latestInstallModule){
+            Write-Host "Updating the $ModuleName module to the latest version : $($latestModule.Version)"
+            Update-Module -Name $ModuleName 
+        }
+        else{
+            Write-Host "Latest $ModuleName module version : $latestInstallModule is already installed."
+        }
+    }
+    else{
+        write-host "$ModuleName module not found, installing the latest Intersight.PowerShell module : version $($latestModule.Version)"
+        Install-Module -Name $ModuleName
+    }
+    
+}
 Function CheckPowerShellVersion
 {
-    # powershell version should be 7.1 and above
-    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 1))){
-         throw "PowerShell version less than 7.1, please upgrade to Powershell 7.1 or higher."
-    }
+    # powershell version should be 7.3.3 and above
+    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 3))){
+        throw "The PowerShell version is less than 7.3.3, please upgrade to PowerShell 7.3.3 or higher."
+   }
 }
 
 Function CheckPowerCLIVersion
@@ -70,9 +98,12 @@ Function CheckPowerCLIVersion
     }
 }
 
+# check the required PowerShell version
+CheckPowerShellVersion
+CheckAndInstallModule -ModuleName "Intersight.PowerShell"
+
 try {
     Import-Module Intersight.PowerShell -ErrorAction Stop
-    CheckPowerShellVersion
     CheckPowerCLIVersion
 
     #If PowerCLI is not installed, then throw exception
