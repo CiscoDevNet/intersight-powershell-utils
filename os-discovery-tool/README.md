@@ -30,17 +30,25 @@
   4. **Generate private and public API keys** with your user account from the Cisco Intersight GUI and use them as described in the next section.
   ---
   ### II. Install dependent components  
-  1. A Windows machine (Virtual/Physical) with access to servers on your on-prem network. Check that **Windows Powershell 7.1+** is installed (Should be available on most Windows OS flavors)
-  2. **Intersight Powershell SDK**: To install Powershell SDK on **Control Node**, use any one of the following:
+  1. A Windows machine (Virtual/Physical) with access to servers on your on-prem network. Check that **Windows Powershell 7.3+** is installed.
+
+  ~~~
+  NOTE : The OS Discovery tool requires the latest Intersight.PowerShell module. If the module is not up-to-date or not installed, the OS Discovery tool will prompt you to install it.
+  ~~~
+  2. **Intersight Powershell Module**: To install Intersight.Powershell module on **Control Node**, use any one of the following:
      - To install form PSGallery
-        ```Bash
-          $ Install-Module -Name Intersight.PowerShell
+        ```powershell
+           Install-Module -Name Intersight.PowerShell
         ```
-     - To install from the source, run the following command to build and install the PowerShell module locally:
-        ```Bash
-          $ build.ps1
-          $ Import-Module -Name '.\Intersight.PowerShell' -Verbose
+     - To install from the [GitHub](https://github.com/CiscoDevNet/intersight-powershell), clone the repository and run the following command to build and install the PowerShell module locally:
+        ```powershell
+           build.ps1
+           Import-Module -Name '.\Intersight.PowerShell'
         ```
+	 - To update the existing Intersight.PowerShell module with the latest version available on PSGallery.
+	   ```powershell
+		  Update-Module -Name "Intersight.PowerShell
+	   ```
 
   3. For VMware vSphere, install the **vSphere PowerCLI package** from:    
      https://my.vmware.com/web/vmware/details?downloadGroup=PCLI650R1&productId=614
