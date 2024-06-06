@@ -47,7 +47,7 @@
         ```
 	 - To update the existing Intersight.PowerShell module with the latest version available on PSGallery.
 	   ```powershell
-		  Update-Module -Name "Intersight.PowerShell
+		  Update-Module -Name "Intersight.PowerShell"
 	   ```
 
   3. For VMware vSphere, install the **vSphere PowerCLI package** from:    
