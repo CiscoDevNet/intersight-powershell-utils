@@ -71,7 +71,7 @@ function CheckAndInstallModule {
         }
     }
     else{
-        write-host "$ModuleName module not found, installing the latest Intersight.PowerShell module : version $($latestModule.Version)"
+        write-host "$ModuleName module not found, installing the latest $ModuleName module : version $($latestModule.Version)"
         Install-Module -Name $ModuleName
     }
     
