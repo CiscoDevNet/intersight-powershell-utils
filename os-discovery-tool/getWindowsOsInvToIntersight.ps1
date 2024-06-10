@@ -30,17 +30,49 @@ Param (
     [string]$configfile
 )
 
+function CheckAndInstallModule {
+    param (
+        [string] $ModuleName  
+        )
+    # Check for latest available Intersight PowerShell module 
+    $latestModule = Find-Module -Name $ModuleName 
+
+    # check the Intersight.PowerShell module
+    $psModule = Get-Module -Name $ModuleName -ListAvailable
+    if($psModule -ne $null -and $psModule.Length -gt 0){
+        $latestInstallModule = $psModule[0].Version
+    }
+    if(-not [string]::IsNullOrEmpty($latestInstallModule)){
+        
+        if($latestModule.Version -ne $latestInstallModule){
+            Write-Host "Updating the $ModuleName module to the latest version : $($latestModule.Version)"
+            Update-Module -Name $ModuleName 
+        }
+        else{
+            Write-Host "Latest $ModuleName module version : $latestInstallModule is already installed."
+        }
+    }
+    else{
+        write-host "$ModuleName module not found, installing the latest $ModuleName module : version $($latestModule.Version)"
+        Install-Module -Name $ModuleName
+    }
+    
+}
 Function CheckPowerShellVersion
 {
-    # powershell version should be 7.1 and above
-    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 1))){
-         throw "The PowerShell version is less than 7.1, please upgrade to PowerShell 7.1 or higher."
+    # powershell version should be 7.3.3 and above
+    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 3))){
+         throw "The PowerShell version is less than 7.3.3, please upgrade to PowerShell 7.3.3 or higher."
     }
 }
 
+# check the required PowerShell version
+CheckPowerShellVersion
+
+CheckAndInstallModule -ModuleName "Intersight.PowerShell"
+
 try {
     Import-Module Intersight.PowerShell -ErrorAction Stop
-    CheckPowerShellVersion
     Import-Module ActiveDirectory -WarningAction silentlyContinue
 } catch [System.Exception] {
     Write-Host -ForeGroundColor Red "Dependent Libraries not installed. Please check that the Cisco Intersight Powershell SDK and Active Directory packages are installed, $_"
@@ -71,7 +103,10 @@ Function WriteLog
 
 Function GetEnvironment
 {
-    Return (Get-Content -Raw -Path $configfile | ConvertFrom-Json)
+    if(Test-Path -Path $configFile){
+        Return (Get-Content -Raw -Path $configfile | ConvertFrom-Json)
+    }
+    throw "ConfigFile does not exist, Please provide a valid configfile path"
 }
 
 Function StartLogging {
