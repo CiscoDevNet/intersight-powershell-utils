@@ -368,6 +368,7 @@ Function GetDriverDetails {
                         $_.devicename -like "*AHCI*" -or
                         $_.devicename -like "*Modular Raid*" -or
                         $_.devicename -like "*NVMe*" -or
+                        $_.devicename -like "*NVM Express*" -or
                         $_.devicename -like "*U.2*" -or
                         $_.devicename -like "*LOM*" -or
                         $_.devicename -like "*SAS HBA*" -or
@@ -405,7 +406,7 @@ Function GetDriverDetails {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SAS HBA"]
         }
         elseif(($storageController.DeviceName -like "*NVMe*") -or
-               ($storageController.DeviceName -like "*U.2*"))
+               ($storageController.DeviceName -like "*U.2*") -or ($storageController.DeviceName -like "*NVM Express*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["NVMe"]
         }
