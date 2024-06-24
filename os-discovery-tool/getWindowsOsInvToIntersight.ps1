@@ -88,6 +88,7 @@ $storage_device_map = @{
     "NVMe"           = "Flash";
     "LOM"            = "LOM";
     "Inter(R) i350"  = "LOM";
+    "QLogic"         = "Fibre Channel";
 }
 
 $datestring = (get-date).toUniversalTime().ToFileTimeUtc()
@@ -373,7 +374,8 @@ Function GetDriverDetails {
                         $_.devicename -like "*LOM*" -or
                         $_.devicename -like "*SAS HBA*" -or
                         $_.devicename -like "*S3260 Dual Raid*" -or
-                        $_.devicename -like "*S3260 Dual Pass Through*"
+                        $_.devicename -like "*S3260 Dual Pass Through*" -or
+                        $_.devicename -like "*QLogic*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -421,6 +423,10 @@ Function GetDriverDetails {
         elseif($storageController.DeviceName -like "*SWRAID*")
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SWRAID"]
+        }
+        elseif($storageController.DeviceName -like "*QLogic*")
+        {
+            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
         }
         else
         {
