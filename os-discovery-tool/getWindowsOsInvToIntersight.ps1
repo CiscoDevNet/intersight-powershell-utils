@@ -89,6 +89,7 @@ $storage_device_map = @{
     "LOM"            = "LOM";
     "Inter(R) i350"  = "LOM";
     "QLogic"         = "Fibre Channel";
+    "mpi3x"          = "mpi3x";
 }
 
 $datestring = (get-date).toUniversalTime().ToFileTimeUtc()
@@ -391,7 +392,14 @@ Function GetDriverDetails {
                 $storageController.DeviceName -like "*SAS RAID*" -or
                 $storageController.DeviceName -like "*RAID SAS*")
         {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["MEGARAID"]
+            if ($storageController.DeviceName -like "*Tri-Mode*")
+            {
+                $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["mpi3x"]
+            }
+            else
+            {
+                $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["MEGARAID"]
+            }
         }
         elseif($storageController.DeviceName -like "*AHCI*")
         {
