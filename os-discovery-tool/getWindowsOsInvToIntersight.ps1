@@ -90,6 +90,7 @@ $storage_device_map = @{
     "Inter(R) i350"  = "LOM";
     "QLogic"         = "Fibre Channel";
     "mpi3x"          = "mpi3x";
+    "Ethernet"       = "Ethernet";
 }
 
 $datestring = (get-date).toUniversalTime().ToFileTimeUtc()
@@ -233,6 +234,7 @@ Function GetDriverDetails {
     $prefix = GetTAGPrefix
     $osInvCollection = New-Object System.Collections.ArrayList
     $driverList = New-Object Collections.Generic.List[string]
+    $driverNameList = New-Object Collections.Generic.List[string]
     #vNIC details
     Write-host "[$hostname]: Retrieving Network Driver Inventory..."
     $netDevList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, FriendlyName,DriverVersion, Description |
@@ -376,7 +378,9 @@ Function GetDriverDetails {
                         $_.devicename -like "*SAS HBA*" -or
                         $_.devicename -like "*S3260 Dual Raid*" -or
                         $_.devicename -like "*S3260 Dual Pass Through*" -or
-                        $_.devicename -like "*QLogic*"
+                        $_.devicename -like "*QLogic*" -or
+                        $_.devicename -like "*X710T2LG*" -or
+                        $_.devicename -like "*E810XXVDA4*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -436,14 +440,20 @@ Function GetDriverDetails {
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
         }
+        elseif(($storageController.DeviceName -like "*X710T2LG*") -or
+                ($storageController.DeviceName -like "*E810XXVDA4*"))
+        {
+            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["Ethernet"]
+        }
         else
         {
             continue
         }
 
 
-        if(!$driverList.Contains($osInv.Value)) {
+        if((!$driverList.Contains($osInv.Value)) -or (!$driverNameList.Contains($storageController.DeviceName))) {
             $driverList.Add($osInv.Value)
+            $driverNameList.Add($storageController.DeviceName)
             $count = $osInvCollection.Add($osInv)
             Clear-Variable -Name osInv
             $osInv = New-Object System.Object
