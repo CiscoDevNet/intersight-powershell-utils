@@ -81,7 +81,6 @@ try {
 
 $storage_device_map = @{
     "SWRAID"         = "RAID";
-    "MEGARAID"       = "SAS RAID";
     "AHCI"           = "ahci";
     "Modular Raid"   = "SAS RAID";
     "SAS HBA"        = "SAS HBA";
@@ -402,7 +401,7 @@ Function GetDriverDetails {
             }
             else
             {
-                $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["MEGARAID"]
+                $osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName
             }
         }
         elseif($storageController.DeviceName -like "*AHCI*")
