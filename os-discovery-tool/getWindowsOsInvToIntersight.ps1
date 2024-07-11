@@ -379,7 +379,8 @@ Function GetDriverDetails {
                         $_.devicename -like "*S3260 Dual Pass Through*" -or
                         $_.devicename -like "*QLogic*" -or
                         $_.devicename -like "*X710T2LG*" -or
-                        $_.devicename -like "*E810XXVDA4*"
+                        $_.devicename -like "*E810XXVDA4*" -or
+                        $_.devicename -like "*E810CQDA2*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -440,7 +441,8 @@ Function GetDriverDetails {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
         }
         elseif(($storageController.DeviceName -like "*X710T2LG*") -or
-                ($storageController.DeviceName -like "*E810XXVDA4*"))
+                ($storageController.DeviceName -like "*E810XXVDA4*") -or
+                ($storageController.DeviceName -like "*E810CQDA2*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["Ethernet"]
         }
