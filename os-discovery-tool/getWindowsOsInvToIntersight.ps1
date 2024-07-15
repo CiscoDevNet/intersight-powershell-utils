@@ -378,6 +378,7 @@ Function GetDriverDetails {
                         $_.devicename -like "*S3260 Dual Raid*" -or
                         $_.devicename -like "*S3260 Dual Pass Through*" -or
                         $_.devicename -like "*QLogic*" -or
+                        $_.devicename -like "*Mellanox*" -or
                         # Below are Intel Ethernet adapters (https://ark.intel.com/content/www/us/en/ark.html#@EthernetProducts)
                         $_.devicename -like "*I710*" -or
                         $_.devicename -like "*XXV710*" -or
@@ -465,7 +466,8 @@ Function GetDriverDetails {
                 ($storageController.DeviceName -like "*I225*") -or
                 ($storageController.DeviceName -like "*I350*") -or
                 ($storageController.DeviceName -like "*I210*") -or
-                ($storageController.DeviceName -like "*E810*"))
+                ($storageController.DeviceName -like "*E810*") -or
+                ($storageController.DeviceName -like "*Mellanox*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["Ethernet"]
         }
