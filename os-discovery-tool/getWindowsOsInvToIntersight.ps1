@@ -378,8 +378,21 @@ Function GetDriverDetails {
                         $_.devicename -like "*S3260 Dual Raid*" -or
                         $_.devicename -like "*S3260 Dual Pass Through*" -or
                         $_.devicename -like "*QLogic*" -or
-                        $_.devicename -like "*X710T2LG*" -or
-                        $_.devicename -like "*E810XXVDA4*"
+                        # Below are Intel Ethernet adapters (https://ark.intel.com/content/www/us/en/ark.html#@EthernetProducts)
+                        $_.devicename -like "*I710*" -or
+                        $_.devicename -like "*XXV710*" -or
+                        $_.devicename -like "*XL710*" -or
+                        $_.devicename -like "*X710*" -or
+                        $_.devicename -like "*V710*" -or
+                        $_.devicename -like "*X550*" -or
+                        $_.devicename -like "*X540*" -or
+                        $_.devicename -like "*X520*" -or
+                        $_.devicename -like "*X557*" -or
+                        $_.devicename -like "*I226*" -or
+                        $_.devicename -like "*I225*" -or
+                        $_.devicename -like "*I350*" -or
+                        $_.devicename -like "*I210*" -or
+                        $_.devicename -like "*E810*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -439,8 +452,20 @@ Function GetDriverDetails {
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
         }
-        elseif(($storageController.DeviceName -like "*X710T2LG*") -or
-                ($storageController.DeviceName -like "*E810XXVDA4*"))
+        elseif(($storageController.DeviceName -like "*I710*") -or
+                ($storageController.DeviceName -like "*XXV710*") -or
+                ($storageController.DeviceName -like "*XL710*") -or
+                ($storageController.DeviceName -like "*X710*") -or
+                ($storageController.DeviceName -like "*V710*") -or
+                ($storageController.DeviceName -like "*X550*") -or
+                ($storageController.DeviceName -like "*X540*") -or
+                ($storageController.DeviceName -like "*X520*") -or
+                ($storageController.DeviceName -like "*X557*") -or
+                ($storageController.DeviceName -like "*I226*") -or
+                ($storageController.DeviceName -like "*I225*") -or
+                ($storageController.DeviceName -like "*I350*") -or
+                ($storageController.DeviceName -like "*I210*") -or
+                ($storageController.DeviceName -like "*E810*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["Ethernet"]
         }
