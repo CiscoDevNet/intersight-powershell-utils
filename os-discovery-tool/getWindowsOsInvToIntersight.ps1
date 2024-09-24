@@ -366,7 +366,7 @@ Function GetDriverDetails {
     $storageControllerList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, DriverVersion |
                     where {
                         $_.devicename -like "*RAID SAS*" -or
-                        $_.devicename -like "*RAID Controller*" -or
+                        $_.devicename -like "*Compute RAID Controller*" -or
                         $_.devicename -like "*SAS RAID*" -or
                         $_.devicename -like "*SWRAID*" -or
                         $_.devicename -like "*AHCI*" -or
