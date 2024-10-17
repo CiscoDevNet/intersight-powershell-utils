@@ -57,3 +57,7 @@ Example of creating a new BIOS policy then updating settings in the policy.
 ### `eth-net-group-vlans.ps1`
 
 Example of configuring VLANs in an Ethernet Network Group policy used by LAN Connectivity Policies
+
+### `bulk-vlans.ps1`
+
+Example of adding VLANs to a VLAN policy in bulk
