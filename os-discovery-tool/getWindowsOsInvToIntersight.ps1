@@ -85,8 +85,6 @@ $storage_device_map = @{
     "Modular Raid"   = "SAS RAID";
     "SAS HBA"        = "SAS HBA";
     "NVMe"           = "Flash";
-    "LOM"            = "LOM";
-    "Inter(R) i350"  = "LOM";
     "QLogic"         = "Fibre Channel";
     "mpi3x"          = "mpi3x";
     "Ethernet"       = "Ethernet";
@@ -374,7 +372,6 @@ Function GetDriverDetails {
                         $_.devicename -like "*NVMe*" -or
                         $_.devicename -like "*NVM Express*" -or
                         $_.devicename -like "*U.2*" -or
-                        $_.devicename -like "*LOM*" -or
                         $_.devicename -like "*SAS HBA*" -or
                         $_.devicename -like "*S3260 Dual Raid*" -or
                         $_.devicename -like "*S3260 Dual Pass Through*" -or
@@ -430,8 +427,7 @@ Function GetDriverDetails {
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["Modular Raid"]
         }
-        elseif(($storageController.DeviceName -like "*SAS HBA*") -or
-               ($storageController.DeviceName -like "*S3260 Dual Pass Through*"))
+        elseif($storageController.DeviceName -like "*S3260 Dual Pass Through*")
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SAS HBA"]
         }
@@ -439,14 +435,6 @@ Function GetDriverDetails {
                ($storageController.DeviceName -like "*U.2*") -or ($storageController.DeviceName -like "*NVM Express*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["NVMe"]
-        }
-        elseif($storageController.DeviceName -like "*LOM*")
-        {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["LOM"]
-        }
-        elseif($storageController.DeviceName -like "*i350*")
-        {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["LOM"]
         }
         elseif($storageController.DeviceName -like "*SWRAID*")
         {
