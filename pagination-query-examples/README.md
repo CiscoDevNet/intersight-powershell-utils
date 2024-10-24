@@ -1,4 +1,4 @@
-# Intersight Policy examples
+# Intersight API Paging and Query examples
 
 ## Authorization
 
@@ -11,3 +11,7 @@ Authorization is performed by every Intersight cmdlet. You must properly configu
 ### `auditlog-pagination.ps1`
 
 This script provides a basic example of paginating the results of the aaa.AuditRecord endpoint as this can easily have 1000's of entries which cannot be retrieved in a single call.
+
+### `vhba-query.ps1`
+
+This script queries vHBA information on servers including queries for specific servers by name.
