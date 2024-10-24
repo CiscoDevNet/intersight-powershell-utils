@@ -63,3 +63,19 @@ This script gets active alarms and displays any tags attached to the affected Ma
 ```
 alarm-tags.ps1
 ```
+
+### `set-server-user-label.ps1`
+
+This script sets the User Label on a server.
+
+```
+set-server-user-label.ps1
+```
+
+### `tag-server-profile.ps1`
+
+This script sets a user defined tag on a Server Profile.
+
+```
+tag-server-profile.ps1
+```
