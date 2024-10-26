@@ -2,7 +2,7 @@
 
 ## Description
 
-**Community** supported alternative to Intersight OS Discovery Tool that can run on baremetal hosts and populate driver information in Intersight via IPMI.  This tool does **NOT** require any additional connectiivty or remote access unlike the original OS Disovery tool and behaves similar to ESXi ucs-tools.
+**Community** supported alternative to Intersight OS Discovery Tool that can run on baremetal hosts and populate driver information in Intersight via IPMI.  This tool does **NOT** require any additional connectivity or remote access unlike the original OS Disovery tool and behaves similar to ESXi ucs-tools.
 
 _functions.ps1_ - Helper functions from original OS Discovery Tool used to gather local host inventory
 
