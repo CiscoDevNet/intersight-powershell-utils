@@ -61,3 +61,7 @@ Example of configuring VLANs in an Ethernet Network Group policy used by LAN Con
 ### `bulk-vlans.ps1`
 
 Example of adding VLANs to a VLAN policy in bulk
+
+### `vxlan-vmq-lan-connectivity.ps1`
+
+Example of configuring VXLAN and VMQ on a vNIC is a single call to bulk requests
