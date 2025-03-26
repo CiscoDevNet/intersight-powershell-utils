@@ -292,7 +292,7 @@ Function GetDriverDetails {
                 foreach($cmd in $nvidiasmi)
                 {
                     # Determine if Graphics driver or compute driver is installed
-                    $command = "'$cmd' --query-gpu=driver_model.current --format=csv,no header"
+                    $command = "'$cmd' --query-gpu=driver_model.current --format='csv,noheader'"
                     $mode = Invoke-Command -ComputerName $hostname -ScriptBlock ([ScriptBlock]::Create("& $command"))
 
                     if($mode -contains "WDDM")
