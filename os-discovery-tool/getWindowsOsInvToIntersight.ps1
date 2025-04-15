@@ -378,6 +378,7 @@ Function GetDriverDetails {
                         $_.devicename -like "*QLogic*" -or
                         $_.devicename -like "*Mellanox*" -or
                         $_.devicename -like "*Cisco*" -or
+                        $_.devicename -like "*Emulex*" -or
                         # Below are Intel Ethernet adapters (https://ark.intel.com/content/www/us/en/ark.html#@EthernetProducts)
                         $_.devicename -like "*I710*" -or
                         $_.devicename -like "*XXV710*" -or
@@ -443,6 +444,17 @@ Function GetDriverDetails {
         elseif($storageController.DeviceName -like "*QLogic*")
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
+        }
+        elseif($storageController.DeviceName -like "*Emulex*")
+        {
+			if ($stdrivername.DriverName -is [System.Collections.IEnumerable])
+			{
+				$osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName[0]
+			}
+			else
+			{
+				$osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName
+			}
         }
         elseif(($storageController.DeviceName -like "*I710*") -or
                 ($storageController.DeviceName -like "*XXV710*") -or
