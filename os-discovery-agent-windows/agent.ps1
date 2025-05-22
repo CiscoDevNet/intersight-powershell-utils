@@ -22,6 +22,13 @@ if (-not(Test-Path -Path $ipmiutilpath -PathType Leaf)) {
 $file = "host-inv.yaml"
 $templog = "temp.log"
 
+Function WriteEndKey
+{
+    Write-Output " -kv:" | Out-File -FilePath $file -Append
+	Write-Output "  key: os.InvEndKey" | Out-File -FilePath $file -Append
+	Write-Output "  value: InvEndValue" | Out-File -FilePath $file -Append
+}
+
 #Gather inventory using existing OS Discovery Tool class and write it to a file
 $inventory = ProcessHostOsInventory("","localhost")
 
@@ -32,6 +39,9 @@ foreach ($x in $inventory)
 	Write-Output "  key: $($x.Key.substring(18))" | Out-File -FilePath $file -Append
 	Write-Output "  value: $($x.Value)" | Out-File -FilePath $file -Append
 }
+
+#Write end key to ensure all the inventory is collected.
+WriteEndKey
 
 #Remove Windows EOL characters and make inventory file *nix compliant
 ((Get-Content $file) -join "`n") + "`n" | Set-Content -NoNewline $file
