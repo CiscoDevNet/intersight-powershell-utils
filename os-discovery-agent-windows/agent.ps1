@@ -30,7 +30,7 @@ Function WriteEndKey
 }
 
 #Gather inventory using existing OS Discovery Tool class and write it to a file
-$inventory = ProcessHostOsInventory("","localhost")
+$inventory = ProcessHostOsInventory -env $null -hostname "localhost"
 
 Write-Output "annotations:" | Out-File -FilePath $file
 foreach ($x in $inventory)
@@ -79,7 +79,7 @@ $counter = 0
 $payload = ""
 $filelocationcounter = 0
 $payloadlength = "0x28"
-
+Write-Host "Writing host inventory file to IMC"
 foreach ($byte in $content)
 { 
 	$counter += 1
@@ -92,7 +92,6 @@ foreach ($byte in $content)
         $filepointer = '{0:X8}' -f $filelocationcounter
         $filepointer = "0x" + $filepointer.tostring().substring(6,2) + " 0x" + $filepointer.tostring().substring(4,2) + " 0x" + $filepointer.tostring().substring(2,2) + " 0x" + $filepointer.tostring().substring(0,2)
 		$cmd = "cmd -d 0x36 0x77 0x02" + " " + $filedescriptor +  $payloadlength + " " +  $filepointer + " " + $payload
-		Write-Host "Writing host inventory file chunk to IMC"
 		Start-Process -FilePath $ipmiutilpath -ArgumentList $cmd -Wait -WindowStyle hidden
 		$filelocationcounter += 40
 		$counter = 0
@@ -100,12 +99,13 @@ foreach ($byte in $content)
 	}
 }
 
-Write-Host "Writing host inventory file last chunk to IMC"
+# Writing host inventory file last chunk to IMC
 $filepointer = '{0:X8}' -f $filelocationcounter
 $filepointer = "0x" + $filepointer.tostring().substring(6,2) + " 0x" + $filepointer.tostring().substring(4,2) + " 0x" + $filepointer.tostring().substring(2,2) + " 0x" + $filepointer.tostring().substring(0,2)
 $cmd = "cmd -d 0x36 0x77 0x02" + " " + $filedescriptor +  "0x" + '{0:X}' -f $counter + " " +  $filepointer + " " + $payload
 Start-Process -FilePath $ipmiutilpath -ArgumentList $cmd -Wait -WindowStyle hidden
 
-Write-Host "Closing IMC host-inv.yaml file descriptor"
+# Closing IMC host-inv.yaml file descriptor
 $cmd = "cmd -d 0x36 0x77 0x01 " + $filedescriptor
 Start-Process -FilePath $ipmiutilpath -ArgumentList $cmd -Wait -WindowStyle hidden
+Write-Host "Inventory file has been successfully written to IMC"

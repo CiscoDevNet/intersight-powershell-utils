@@ -70,7 +70,7 @@ Function GetTAGPrefix {
 #Os Details
 Function GetOSDetails{
     Param([string]$hostname)
-    Write-Host "GetOSDetails: $hostname"
+    Write-Host "[$hostname]: Retrieving OS Inventory..."
     $prefix = GetTAGPrefix
     $updateTS = GetISO8601Time
 
@@ -139,7 +139,6 @@ Function GetOSDetails{
 #Driver details
 Function GetDriverDetails {
     Param([string]$hostname)
-    Write-Host "GetDriverDetails: $hostname"
     $prefix = GetTAGPrefix
     $osInvCollection = New-Object System.Collections.ArrayList
     $driverList = New-Object Collections.Generic.List[string]
