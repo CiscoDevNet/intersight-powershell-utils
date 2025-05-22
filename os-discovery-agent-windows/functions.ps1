@@ -1,12 +1,12 @@
 $storage_device_map = @{
     "SWRAID"         = "RAID";
-    "MEGARAID"       = "SAS RAID";
     "AHCI"           = "ahci";
     "Modular Raid"   = "SAS RAID";
     "SAS HBA"        = "SAS HBA";
     "NVMe"           = "Flash";
-    "LOM"            = "LOM";
-    "Inter(R) i350"  = "LOM";
+    "QLogic"         = "Fibre Channel";
+    "mpi3x"          = "mpi3x";
+    "Ethernet"       = "Ethernet";
 }
 
 $datestring = (get-date).toUniversalTime().ToFileTimeUtc()
@@ -70,7 +70,7 @@ Function GetTAGPrefix {
 #Os Details
 Function GetOSDetails{
     Param([string]$hostname)
-    Write-Host "GetOSDetails: $hostname"
+    Write-Host "[$hostname]: Retrieving OS Inventory..."
     $prefix = GetTAGPrefix
     $updateTS = GetISO8601Time
 
@@ -139,10 +139,10 @@ Function GetOSDetails{
 #Driver details
 Function GetDriverDetails {
     Param([string]$hostname)
-    Write-Host "GetDriverDetails: $hostname"
     $prefix = GetTAGPrefix
     $osInvCollection = New-Object System.Collections.ArrayList
     $driverList = New-Object Collections.Generic.List[string]
+    $driverNameList = New-Object Collections.Generic.List[string]
     #vNIC details
     Write-host "[$hostname]: Retrieving Network Driver Inventory..."
     $netDevList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, FriendlyName,DriverVersion, Description |
@@ -151,6 +151,20 @@ Function GetDriverDetails {
                         $_.Devicename -like "*FCoE*" -or
                         $_.Devicename -like "*LOM*" -or
                         $_.Devicename -like "*Intel(R) i350*" -or
+                        $_.devicename -like "*I710*" -or
+                        $_.devicename -like "*XXV710*" -or
+                        $_.devicename -like "*XL710*" -or
+                        $_.devicename -like "*X710*" -or
+                        $_.devicename -like "*V710*" -or
+                        $_.devicename -like "*X550*" -or
+                        $_.devicename -like "*X540*" -or
+                        $_.devicename -like "*X520*" -or
+                        $_.devicename -like "*X557*" -or
+                        $_.devicename -like "*I226*" -or
+                        $_.devicename -like "*I225*" -or
+                        $_.devicename -like "*I350*" -or
+                        $_.devicename -like "*I210*" -or
+                        $_.devicename -like "*E810*" -or
                         $_.Devicename -like "*Nvidia*"
                     }
     $devcount = 0
@@ -187,7 +201,21 @@ Function GetDriverDetails {
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value "Ethernet"
         }
-        elseif($netdev.DeviceName -like "*Intel(R) i350*")
+        elseif(($netdev.DeviceName -like "*Intel(R) i350*") -or
+               ($netdev.DeviceName -like "*I710*") -or
+               ($netdev.DeviceName -like "*XXV710*") -or
+               ($netdev.DeviceName -like "*XL710*") -or
+               ($netdev.DeviceName -like "*X710*") -or
+               ($netdev.DeviceName -like "*V710*") -or
+               ($netdev.DeviceName -like "*X550*") -or
+               ($netdev.DeviceName -like "*X540*") -or
+               ($netdev.DeviceName -like "*X520*") -or
+               ($netdev.DeviceName -like "*X557*") -or
+               ($netdev.DeviceName -like "*I226*") -or
+               ($netdev.DeviceName -like "*I225*") -or
+               ($netdev.DeviceName -like "*I350*") -or
+               ($netdev.DeviceName -like "*I210*") -or
+               ($netdev.DeviceName -like "*E810*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value "Ethernet"
         }
@@ -275,16 +303,21 @@ Function GetDriverDetails {
     $storageControllerList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, DriverVersion |
                     where {
                         $_.devicename -like "*RAID SAS*" -or
+                        $_.devicename -like "*Compute RAID Controller*" -or
                         $_.devicename -like "*SAS RAID*" -or
                         $_.devicename -like "*SWRAID*" -or
                         $_.devicename -like "*AHCI*" -or
                         $_.devicename -like "*Modular Raid*" -or
                         $_.devicename -like "*NVMe*" -or
+                        $_.devicename -like "*NVM Express*" -or
                         $_.devicename -like "*U.2*" -or
-                        $_.devicename -like "*LOM*" -or
                         $_.devicename -like "*SAS HBA*" -or
                         $_.devicename -like "*S3260 Dual Raid*" -or
-                        $_.devicename -like "*S3260 Dual Pass Through*"
+                        $_.devicename -like "*S3260 Dual Pass Through*" -or
+                        $_.devicename -like "*QLogic*" -or
+                        $_.devicename -like "*Mellanox*" -or
+                        $_.devicename -like "*Cisco*" -or
+                        $_.devicename -like "*Emulex*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -298,9 +331,17 @@ Function GetDriverDetails {
         if(($storageController.DeviceName -like "*LSI*" -and
                 $storageController.DeviceName -like "*Mega*") -or
                 $storageController.DeviceName -like "*SAS RAID*" -or
-                $storageController.DeviceName -like "*RAID SAS*")
+                $storageController.DeviceName -like "*RAID SAS*" -or
+                $storageController.DeviceName -like "*RAID Controller*")
         {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["MEGARAID"]
+            if ($storageController.DeviceName -like "*Tri-Mode*")
+            {
+                $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["mpi3x"]
+            }
+            else
+            {
+                $osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName
+            }
         }
         elseif($storageController.DeviceName -like "*AHCI*")
         {
@@ -317,21 +358,35 @@ Function GetDriverDetails {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SAS HBA"]
         }
         elseif(($storageController.DeviceName -like "*NVMe*") -or
-               ($storageController.DeviceName -like "*U.2*"))
+               ($storageController.DeviceName -like "*U.2*") -or ($storageController.DeviceName -like "*NVM Express*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["NVMe"]
-        }
-        elseif($storageController.DeviceName -like "*LOM*")
-        {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["LOM"]
-        }
-        elseif($storageController.DeviceName -like "*i350*")
-        {
-            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["LOM"]
         }
         elseif($storageController.DeviceName -like "*SWRAID*")
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SWRAID"]
+        }
+        elseif($storageController.DeviceName -like "*QLogic*")
+        {
+            $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["QLogic"]
+        }
+        elseif($storageController.DeviceName -like "*Emulex*")
+        {
+			if ($stdrivername.DriverName -is [System.Collections.IEnumerable])
+			{
+				$osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName[0]
+			}
+			else
+			{
+				$osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName
+			}
+        }
+        # Ideally this condition should be sufficient to fetch driver name for storage controller
+        # storageController DeviceName and $stdriverName.Name will be same so this condition will always make sure 
+        # it fetches te correct driver name, Kept the previous condition as it to support backward compatibility
+        elseif($storageController.DeviceName -like $stdrivername.Name)
+        {
+            $osInv | Add-Member -type NoteProperty -name Value -Value $stdrivername.DriverName
         }
         else
         {
@@ -339,7 +394,7 @@ Function GetDriverDetails {
         }
 
 
-        if(!$driverList.Contains($osInv.Value)) {
+        if((!$driverList.Contains($osInv.Value)) -or (!$driverNameList.Contains($storageController.DeviceName))) {
             $driverList.Add($osInv.Value)
             $count = $osInvCollection.Add($osInv)
             Clear-Variable -Name osInv
