@@ -324,7 +324,7 @@ Function GetDriverDetails {
         {
             continue
         }
-        if(!$driverList.contains($osInv.Value)) {
+        if((!$driverList.Contains($osInv.Value)) -or (!$driverNameList.Contains($storageController.DeviceName))) {
             $driverList.Add($osInv.Value)
             $count = $osInvCollection.Add($osInv)
             Clear-Variable -Name osInv
@@ -393,7 +393,8 @@ Function GetDriverDetails {
                         $_.devicename -like "*I225*" -or
                         $_.devicename -like "*I350*" -or
                         $_.devicename -like "*I210*" -or
-                        $_.devicename -like "*E810*"
+                        $_.devicename -like "*E810*" -or
+                        $_.devicename -like "*Intel(R) SSD*"
                     }
 
     foreach ($storageController in $storageControllerList) {
@@ -433,7 +434,9 @@ Function GetDriverDetails {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["SAS HBA"]
         }
         elseif(($storageController.DeviceName -like "*NVMe*") -or
-               ($storageController.DeviceName -like "*U.2*") -or ($storageController.DeviceName -like "*NVM Express*"))
+               ($storageController.DeviceName -like "*U.2*") -or
+               ($storageController.DeviceName -like "*NVM Express*") -or
+               ($storageController.DeviceName -like "*Intel(R) SSD*"))
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value $storage_device_map["NVMe"]
         }
