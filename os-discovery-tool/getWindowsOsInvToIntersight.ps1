@@ -234,7 +234,7 @@ Function GetDriverDetails {
     $driverNameList = New-Object Collections.Generic.List[string]
     #vNIC details
     Write-host "[$hostname]: Retrieving Network Driver Inventory..."
-    $netDevList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, FriendlyName,DriverVersion, Description |
+    $netDevList = Get-CimInstance Win32_PnPSignedDriver -Computer $hostname | select DeviceName, FriendlyName, DriverVersion, Description, DeviceClass |
                     where {
                         $_.Devicename -like "*Ethernet*" -or
                         $_.Devicename -like "*FCoE*" -or
@@ -280,7 +280,13 @@ Function GetDriverDetails {
         {
             $osInv | Add-Member -type NoteProperty -name Value -Value "Ethernet"
         }
-        elseif($netdev.DeviceName -like "*Nvidia*")
+        elseif($netdev.DeviceName -like "*Nvidia*" -and $netdev.DeviceClass -eq "NET")
+        {
+            $netdrivername = (Get-CimInstance -class "Win32_NetworkAdapter" -namespace "root\CIMV2" -ComputerName $hostname) | select Name, MACAddress, ServiceName |
+                where { $_.Name -eq $netdev.FriendlyName -and $_.MACAddress}
+            $osInv | Add-Member -type NoteProperty -name Value -Value $netdrivername.ServiceName
+        }
+        elseif($netdev.DeviceName -like "*Nvidia*" -and $netdev.DeviceClass -eq "DISPLAY")
         {
             Write-host "[$hostname]: NVIDIA GPU Detected, retrieving GPU inventory..."
 
@@ -338,7 +344,7 @@ Function GetDriverDetails {
             $key = $prefix+"os.driver."+$devcount+".version"
 
             # Nvidia GPU driver version needs special reformatting
-            if($netdev.DeviceName -like "*Nvidia*")
+            if($netdev.DeviceName -like "*Nvidia*"  -and $netdev.DeviceClass -eq "DISPLAY")
             {
                 $osInv | Add-Member -type NoteProperty -name Key -Value $key
 
