@@ -34,6 +34,117 @@ Param (
 
 $mypath = (Resolve-Path .)
 
+
+$IntersightScriptBlock = {
+    Param(
+        $intersightEnv,
+        $server_serial,
+        $computeType,
+        $osInvCollection
+        )
+
+Function DiffServerTAGs {
+    Param ([object]$oldTAGs, [object]$newTAGS)
+    $changed = $false
+    Write-Host "Computing changes..."
+    $oldIntersightTags = $oldTags | where-object {$_.Key -like "intersight.server.os.*"}
+    $newIntersightTags = $newTags | where-object {$_.Key -like "intersight.server.os.*"}  
+    if(($newIntersightTags | measure-object).Count -ne ($oldIntersightTags | measure-object).Count) {
+        $changed = $true
+    }
+    else
+    {
+        foreach($MoTag in $newIntersightTags) {
+            if($MoTag.Key -ne "intersight.server.os.updateTimeStamp") {
+                $oldMoTag = $oldIntersightTags | where-object {$_.key -eq $MoTag.key}
+                if($oldMoTag -eq $null -or $oldMoTag.Value -ne $MoTag.Value) {
+                    $changed = $true
+                    break
+                }
+            }
+        }
+    }
+    Return $changed
+}
+
+    try{
+        # check if Intersight.PowerShell module is installed
+        if (-not (Get-Module -ListAvailable -Name Intersight.PowerShell)){
+            Write-Host -ForegroundColor Red "Intersight.PowerShell module not found, please install the module from PowerShell Gallery"
+            exit
+        }
+
+         
+        Import-Module Intersight.PowerShell -ErrorAction Stop
+
+        # setting up connection to intersight cloud
+        $connection = @{
+        BasePath = $intersightEnv.config.intersight_url
+        ApiKeyId = $intersightEnv.config.intersight_api_key
+        ApiKeyFilePath =  $Env:USERPROFILE+"\"+$intersightEnv.config.intersight_secret_file
+        HttpSigningHeader =  @("(request-target)", "Host", "Date", "Digest")
+        }
+        Set-IntersightConfiguration @connection
+        Write-Host "Successfully configured to Intersight" -ForegroundColor Green
+
+        $Server =  Get-IntersightComputePhysicalSummary -Filter "Serial eq '$server_serial'"
+        $list = @()
+        $tags = $Server.Results[0].Tags
+        $moid = $Server.Results[0].Moid
+
+        if ($moid -eq "") {
+            Write-Host -ForegroundColor Red "Server not found in Intersight: [$server_serial], skipping..."
+            return
+        }
+
+        $changed = DiffServerTAGs $tags $osInvCollection
+
+        if (-not $changed) {
+            Write-Host -ForegroundColor Yellow "No changes detected for Server: [$server_serial], skipping..." 
+            return
+        }
+
+
+        foreach($tag in $tags) {
+            #5. Add tags like Intersight.LicenseTier to the list
+            if($tag.Key -notlike "intersight.server.*") {
+                $mo = Initialize-IntersightMoTag -Key $tag.Key -Value $tag.Value
+                $list += $mo
+            }
+        }
+
+        #6. Create list from TAGs
+        foreach ($item in $osInvCollection){
+            $mo = Initialize-IntersightMoTag -Key $item.Key -Value $item.Value
+            $list += $mo
+        }
+
+        #7. Call patch API
+        Write-Host -ForegroundColor Magenta "Changes detected for Server: [$server_serial], PATCHing to Intersight..."
+            if($computeType -eq "blade") {
+            $UpdateResult = Set-IntersightComputeBlade -Moid $moid -Tags $list
+        }
+        else
+        {
+            if($computeType -eq "rack") {
+                $UpdateResult = Set-IntersightComputeRackUnit -Moid $moid -Tags $list
+            }
+            else
+            {
+                Write-Host "Unknown Host: $server_serial, skipping..."
+            }
+        }
+    } catch [System.Exception] {
+        Write-Host -ForegroundColor Red "Intersight.PowerShell module not found, please install the module from PowerShell Gallery"
+        exit
+    }
+}
+
+
+
+
+
+
 Function CheckVMWarePowerCLI
 {
   Param([object]$pkg)
@@ -605,7 +716,7 @@ Function DoDiscovery {
     StartLogging $env
     WriteLog $env "[INFO]" "ODT script for OS Discovery started..."
     ConnectvCenter $env
-    ConnectIntersight $env
+    #ConnectIntersight $env
     $VMHosts = GetVMHosts $env
     foreach ($VMHost in $VMHosts) {
         WriteLog $env "INFO" "[$VMHost]: Retrieving OS Inventory..."
@@ -621,29 +732,13 @@ Function DoDiscovery {
         $server_serial = GetVMHostSerial $esxcli
         
         $computeType = GetComputeType $esxcli
-        $obj = LookupIntersightServerBySerial $server_serial $computeType
-        if($obj) {
-            if($obj.Results.Count -gt 0)
-            {
-                $osInvCollection = ProcessHostOsInventory $env $VMHost $esxcli
-                $ServerMoid = $obj.Results[0].Moid
-                $ServerName = $obj.Results[0].Name
-                Write-Host "Server MOID: " $ServerMoid
-                PatchIntersightServerBySerial $env $server_serial $computeType $obj $osInvCollection
-                Write-Host -ForegroundColor Green "Processing [$ServerName] {$VMHost} :"$server_serial" complete."
-            }
-            else
-            {
-                Write-Host -ForegroundColor Yellow "No results for {$VMHost}:$sever_serial from intersight, skipping..."
-                WriteLog $env "WARNING" "No results for {$VMHost}:$sever_serial from intersight"
-            }
-        }
-        else
-        {
-            Write-Host -ForegroundColor Yellow "No results for {$VMHost}:$sever_serial from intersight, skipping..."
-            WriteLog $env "WARNING" "No results for {$VMHost}:$sever_serial from intersight"
-        }
-        
+        #$obj = LookupIntersightServerBySerial $server_serial $computeType
+        $osInvCollection = ProcessHostOsInventory $env $VMHost $esxcli
+        #Using Jobs to load intersight module to avoid conflicts
+        $intersightJob = Start-Job -ScriptBlock $IntersightScriptBlock -ArgumentList $env,$server_serial,$computeType,$osInvCollection
+        Wait-Job -Job $intersightJob
+        $jobResult = Receive-Job -Job $intersightJob
+        $jobResult
         Write-Host -ForegroundColor Green "===================================================================================="
     }
     WriteLog $env "[INFO]" "ODT Discovery complete!"

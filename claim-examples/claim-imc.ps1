@@ -12,14 +12,14 @@ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied.
 #>
 
-# This example gets Intersight claim code information from the IMC and claims the device in Intersight
+# This example gets Intersight claim code information from the IMC/UCSM and claims the device in Intersight
 # Additional error handling may be needed
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$imc_ip = "198.19.1.1"
+$imc_ip = "10.193.47.43"
 $username = "admin"
-$password = "YourIMCPassword"
+$password = "Nbv12345"
 
 $aaa_url= "https://$imc_ip/nuova"
 $systems_url= "https://$imc_ip/connector/Systems"
@@ -36,19 +36,25 @@ $headers = @{'Ucsmcookie' = 'ucsm-cookie=' + $aaa.aaaLogin.outCookie}
 
 #Get device connector information
 $systems = Invoke-RestMethod -Method 'GET' -Uri $systems_url -Headers $headers -SkipCertificateCheck
+$systems
 $deviceconnections = Invoke-RestMethod -Method 'GET' -Uri $deviceconnections_url -Headers $headers -SkipCertificateCheck
+$deviceconnections
 $deviceidentifiers = Invoke-RestMethod -Method 'GET' -Uri $deviceidentifiers_url -Headers $headers -SkipCertificateCheck
+$deviceidentifiers
 $securitytokens = Invoke-RestMethod -Method 'GET' -Uri $securitytokens_url -Headers $headers -SkipCertificateCheck
+$securitytokens
 
 #Connect to Intersight and claim device, remember to specify your ApiKeyId and ApiKeyFilePath
 
 $ApiParams = @{
-BasePath = "https://intersight.com"
-ApiKeyId = "your/api/key"
-ApiKeyFilePath = $pwd.Path + "\SecretKey.txt"
+BasePath = " https://us-east-1.intersight.com"
+ApiKeyId = "5cd4e7797564612d30dc7671/5ef9bd0e7564612d328ebd60/64a3e20b75646132016322a0"
+ApiKeyFilePath = "C:\\Users\\gzahidi\\Downloads\\Production_SecretKey.txt"
 HttpSigningHeader = @("(request-target)", "Host", "Date", "Digest")
 }
 
 Set-IntersightConfiguration @ApiParams
+
+Get-IntersightConfiguration
 
 New-IntersightAssetDeviceClaim -SecurityToken $securitytokens.token -SerialNumber $deviceidentifiers.id

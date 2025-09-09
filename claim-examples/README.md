@@ -10,6 +10,6 @@ Authorization is performed by every Intersight cmdlet. You must properly configu
 
 ### `imc-claim.ps1`
 
-This example will retrieve device id and claim code from an IMC using generic REST cmdlets and then claim the device in Intersight with the Intersight Powershell SDK.
+This example will retrieve device id and claim code from an IMC/UCSM using generic REST cmdlets and then claim the device in Intersight with the Intersight Powershell SDK.
 
-You will need to substitute your IMC IP, username, password as well as your Intersight ApiKeyId and ApiKeyFilePath paramaeters
+You will need to substitute your IMC/UCSM IP, username, password as well as your Intersight ApiKeyId and ApiKeyFilePath paramaeters
