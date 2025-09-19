@@ -50,37 +50,40 @@ Function CheckVMWarePowerCLI
 
 function CheckAndInstallModule {
     param (
-        [string] $ModuleName  
-        )
-    # Check for latest available Intersight PowerShell module 
-    $latestModule = Find-Module -Name $ModuleName 
-
-    # check the Intersight.PowerShell module
-    $psModule = Get-Module -Name $ModuleName -ListAvailable
-    if($psModule -ne $null -and $psModule.Length -gt 0){
-        $latestInstallModule = $psModule[0].Version
-    }
-    if(-not [string]::IsNullOrEmpty($latestInstallModule)){
-        
-        if($latestModule.Version -ne $latestInstallModule){
-            Write-Host "Updating the $ModuleName module to the latest version : $($latestModule.Version)"
-            Update-Module -Name $ModuleName 
+        [string] $ModuleName
+    )
+    try {
+        # Check for latest available Intersight PowerShell module
+        $latestModule = Find-Module -Name $ModuleName
+        # check the Intersight.PowerShell module
+        $psModule = Get-Module -Name $ModuleName -ListAvailable
+        if($psModule -ne $null -and $psModule.Length -gt 0){
+            $latestInstallModule = $psModule[0].Version
+        }
+        if(-not [string]::IsNullOrEmpty($latestInstallModule)){
+            if($latestModule.Version -ne $latestInstallModule){
+                Write-Host "Updating the $ModuleName module to the latest version : $($latestModule.Version)"
+                Update-Module -Name $ModuleName
+            }
+            else{
+                Write-Host "Latest $ModuleName module version : $latestInstallModule is already installed."
+            }
         }
         else{
-            Write-Host "Latest $ModuleName module version : $latestInstallModule is already installed."
+            write-host "$ModuleName module not found, installing the latest $ModuleName module : version $($latestModule.Version)"
+            Install-Module -Name $ModuleName
         }
-    }
-    else{
-        write-host "$ModuleName module not found, installing the latest $ModuleName module : version $($latestModule.Version)"
-        Install-Module -Name $ModuleName
+    } 
+    catch  {
+        Write-Warning "Unable to get latest $ModuleName module from PowerShell Gallery, Continue with existing installed module"
     }
     
 }
 Function CheckPowerShellVersion
 {
-    # powershell version should be 7.3.3 and above
-    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 3))){
-        throw "The PowerShell version is less than 7.3.3, please upgrade to PowerShell 7.3.3 or higher."
+    # powershell version should be 7.4 and above
+    if (-not (($PSVersionTable.PSVersion.Major -ge 7) -and ($PSVersionTable.PSVersion.Minor -ge 4))){
+        throw "The PowerShell version is less than 7.4, please upgrade to PowerShell 7.4 or higher."
    }
 }
 
