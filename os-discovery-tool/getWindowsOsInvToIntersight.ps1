@@ -252,18 +252,27 @@ Function GetDriverDetails {
         $key = $prefix+"os.driver."+$devcount+".name"
         $osInv = New-Object System.Object
         $osInv | Add-Member -type NoteProperty -name Key -Value $key
+
+        # Skip if DeviceName is null or empty
+        if (-not $netdev.DeviceName -or $netdev.DeviceName -eq "") {
+            continue
+        }
+
         if($netdev.DeviceName -like "*Ethernet*") {
             $netdrivername = (Get-CimInstance -class "Win32_NetworkAdapter" -namespace "root\CIMV2" -ComputerName $hostname) | select Name, MACAddress, ServiceName |
                     where { $_.Name -eq $netdev.FriendlyName -and $_.MACAddress}
 
-            if($netdrivername.ServiceName -eq "ENIC") {
+            if(-not $netdrivername){
+                continue
+            }
+            elseif($netdrivername.ServiceName -eq "ENIC") {
                 $osInv | Add-Member -type NoteProperty -name Value -Value "enic"
             }
             elseif($netdrivername.ServiceName -eq "NENIC")
             {
                 $osInv | Add-Member -type NoteProperty -name Value -Value "nenic"
             }
-            elseif($netdrivername.ServiceName)
+            elseif($netdrivername.ServiceName -and $netdrivername.ServiceName -ne "")
             {
                 $osInv | Add-Member -type NoteProperty -name Value -Value $netdrivername.ServiceName
             }
@@ -410,6 +419,11 @@ Function GetDriverDetails {
     foreach ($storageController in $storageControllerList) {
         $stdrivername = (Get-CimInstance -class "Win32_SCSIController" -namespace "root\CIMV2" -ComputerName $hostname) | select Name, DriverName |
                 where { $_.Name -like $storageController.DeviceName }
+
+        # Skip if DriverName is null or empty
+        if (-not $stdrivername.DriverName -or $stdrivername.DriverName -eq "") {
+            continue
+        }
 
         $key = $prefix+"os.driver."+$devcount+".name"
         Clear-Variable -Name osInv
