@@ -16,9 +16,10 @@ or implied.
 # All params are optional.  If not set, environment variables are used.
 [cmdletbinding()]
 param(
-    <# The Intersight root URL for the API endpoint. The default is https://intersight.com
-    Note : Note: If your account is provisioned on the EMEA cluster, 
-    you must use the intersight-aws-eu-central-1.com URL instead of intersight.com.#>
+    <#
+    The Intersight root URL for the API endpoint. The default is https://intersight.com
+    Note : If your account is provisioned on the EMEA cluster, you must use the https://eu-central-1.intersight.com URL instead of intersight.com.
+    #>
     [string]$BasePath = "https://intersight.com",
     
     [string]$ApiKeyId = $env:INTERSIGHT_API_KEY_ID,
