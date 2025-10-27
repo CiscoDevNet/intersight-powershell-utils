@@ -21,6 +21,7 @@ param(
     Note : If your account is provisioned on the EMEA cluster, you must use the https://eu-central-1.intersight.com URL instead of intersight.com.
     #>
     [string]$BasePath = "https://intersight.com",
+    
     [string]$ApiKeyId = $env:INTERSIGHT_API_KEY_ID,
     [string]$ApiKeyFilePath = $env:INTERSIGHT_API_PRIVATE_KEY
 )
