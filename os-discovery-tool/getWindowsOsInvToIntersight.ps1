@@ -319,7 +319,7 @@ Function GetDriverDetails {
                         Write-host "[$hostname]: NVIDIA Graphics Driver is installed"
                         $osInv | Add-Member -type NoteProperty -name Value -Value "nvidia(graphics)"
                     }
-                    elseif($mode -contains "TCC")
+                    elseif(($mode -contains "TCC") -or ($mode -contains "MCDM"))
                     {
                         Write-host "[$hostname]: NVIDIA Compute Driver is installed"
                         $osInv | Add-Member -type NoteProperty -name Value -Value "nvidia(compute)"
